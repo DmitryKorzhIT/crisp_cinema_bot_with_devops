@@ -3,7 +3,7 @@ venv
 .git
 .idea
 *.swp
-./app/code/config.py
+*app/.env
 .obsidian
 delete_me.py
 *~*
