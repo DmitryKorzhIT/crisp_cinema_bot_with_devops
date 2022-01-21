@@ -1,0 +1,11 @@
+__pycache__
+venv
+.git
+.idea
+*.swp
+./app/code/config.py
+.obsidian
+delete_me.py
+*~*
+.ipynb*
+Cron_Commands
