@@ -1,0 +1,32 @@
+# ================================================== #
+# =====|   A P P L I C A T I O N   F I L E S  |===== #
+# ================================================== #
+
+__pycache__
+venv
+.git
+.idea
+*.swp
+./app/code/config.py
+.obsidian
+delete_me.py
+*~*
+.ipynb*
+Cron_Commands
+
+
+
+# ================================================== #
+# =======|   T E R R A F O R M   F I L E S  |======= #
+# ================================================== #
+
+# Compiled files
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+# terraform.tfvars
+
+# Module directory
+.terraform/
+.idea
