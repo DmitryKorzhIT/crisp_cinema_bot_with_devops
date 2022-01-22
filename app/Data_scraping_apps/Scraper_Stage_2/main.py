@@ -7,7 +7,7 @@ import json
 import pandas as pd
 import numpy as np
 
-from config import KEY
+# from config import KEY
 
 
 # Headers values and URL info for the API.

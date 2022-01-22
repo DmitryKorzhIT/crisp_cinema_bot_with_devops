@@ -4,4 +4,4 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Telegram Bot Token
-telegram_token = os.getenv("telegram_token")
+APP_BOT_TOKEN = os.getenv("APP_BOT_TOKEN")

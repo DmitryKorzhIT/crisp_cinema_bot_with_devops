@@ -4,10 +4,10 @@ from aiogram.dispatcher.filters import Text
 import pandas as pd
 import numpy as np
 
-from code.config import telegram_token
+from code.config import APP_BOT_TOKEN
 
 
-bot = Bot(token=telegram_token, parse_mode=types.ParseMode.HTML)
+bot = Bot(token=APP_BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
 
 

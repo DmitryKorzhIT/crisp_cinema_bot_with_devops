@@ -3,12 +3,14 @@ from aiogram.utils.markdown import hbold
 from aiogram.dispatcher.filters import Text
 import pandas as pd
 import numpy as np
+import os
 
-from code.config import telegram_token
 from code.message_movie import random_movie_value, random_movie_buttons
 
 
-bot = Bot(token=telegram_token, parse_mode=types.ParseMode.HTML)
+APP_BOT_TOKEN = os.getenv("APP_BOT_TOKEN")
+
+bot = Bot(token=APP_BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
 
 
