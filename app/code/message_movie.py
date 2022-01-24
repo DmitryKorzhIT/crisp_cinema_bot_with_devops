@@ -18,7 +18,7 @@ def random_movie_value():
     file = pd.read_csv('.data/data_v.3.0.csv')
     file_len = file[file.columns[0]].count() - 1
 
-    # Implemented filters to show good quolity random movies.
+    # Implemented filters to show good quality random movies.
     while True:
         random_value = np.random.randint(0, file_len)
 
@@ -31,7 +31,7 @@ def random_movie_value():
         else:
             continue
 
-        # Remove from bad quolity movies.
+        # Remove from bad quality movies.
         if (file['ratingKinopoiskVoteCount'][random_value] >= 1000) and \
            (file['ratingKinopoisk'][random_value] >= 5.0) and \
            (file['year'][random_value] >= 2000):
