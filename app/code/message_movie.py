@@ -22,24 +22,24 @@ def random_movie_value():
     while True:
         random_value = np.random.randint(0, file_len)
 
-        # Remove from adult bad quolity movies.
+        # Remove from adult bad quality movies.
         if (file['ratingAgeLimits'][random_value] == 'r' or 'age18') and \
            (file['ratingKinopoiskVoteCount'][random_value] >= 2000) and \
            (file['ratingKinopoisk'][random_value] >= 5.5) and \
            (file['year'][random_value] >= 2000):
             break
-        else:
-            continue
 
         # Remove from bad quality movies.
-        if (file['ratingKinopoiskVoteCount'][random_value] >= 1000) and \
-           (file['ratingKinopoisk'][random_value] >= 5.0) and \
-           (file['year'][random_value] >= 2000):
+        elif (file['ratingKinopoiskVoteCount'][random_value] >= 1000) and \
+             (file['ratingKinopoisk'][random_value] >= 5.0) and \
+             (file['year'][random_value] >= 2000):
             break
+
         else:
             continue
 
-    # Get link on a poster.
+
+    # Get link of the poster.
     image_link = file['posterUrl'][random_value]
 
     # Movie type.

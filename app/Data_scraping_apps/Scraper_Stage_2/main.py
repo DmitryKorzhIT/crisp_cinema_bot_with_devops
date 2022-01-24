@@ -1,5 +1,6 @@
 import requests
 import os
+from dotenv import load_dotenv
 import time
 from datetime import datetime
 from pprint import pprint
@@ -7,13 +8,16 @@ import json
 import pandas as pd
 import numpy as np
 
-# from config import KEY
+
+# Config data.
+load_dotenv()
+URL_MOVIES = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/'
+KINOPOISK_API_KEY = os.getenv("KINOPOISK_API_KEY")
 
 
-# Headers values and URL info for the API.
-url_movies = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/'
+# Headers and params values for an API.
 headers_value = {
-    'X-API-KEY': KEY,
+    'X-API-KEY': f'{KINOPOISK_API_KEY}',
     'Content-Type': 'application/json'
 }
 
@@ -33,17 +37,15 @@ for i in range(0, movies_df_len):
     print(str("{:.2f}".format(progress)) + '%')
 
     movie_id = movies_df.at[i, 'kinopoiskId']
-    url_movies_id = url_movies + str(movie_id)
+    url_movies_id = URL_MOVIES + str(movie_id)
 
     # Get data from the API in .json format.
     r = requests.get(url_movies_id, headers=headers_value)
 
     # Get data from json API and write data to movies_df.
     for atribute in atribute_list:
-
         try:
             movies_df.at[i, atribute] = str(r.json()[atribute])
-
         except ValueError:
             movies_df.at[i, atribute] = ''
 
