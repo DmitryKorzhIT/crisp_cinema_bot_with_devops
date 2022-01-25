@@ -11,8 +11,11 @@ bot = Bot(token=APP_BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
 
 
-# Get a message with a random movie.
 def random_movie_value():
+    """Gives a random movie with all neccessary data.
+    Return of this function uses to show a movie card
+    message.
+    """
 
     # Read a csv file and create a random number.
     file = pd.read_csv('.data/data_v.3.0.csv')
@@ -103,8 +106,15 @@ def random_movie_value():
     return message_list
 
 
-# Inline buttons for a message with a random movie.
 def random_movie_buttons(name_year):
+    """Two inline buttons: "Trailer" and ">" (next movie).
+    These two buttons uses with a movie message.
+
+    The "Trailer" button direct User on youtube.com page
+    with a trailer for a particular movie.
+
+    The ">" (next movie) button updates a movie message.
+    """
 
     # Message inline buttons.
     buttons = [types.InlineKeyboardButton('Трейлер', url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
@@ -112,13 +122,3 @@ def random_movie_buttons(name_year):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     keyboard.add(*buttons)
     return keyboard
-
-
-
-
-
-
-
-
-
-

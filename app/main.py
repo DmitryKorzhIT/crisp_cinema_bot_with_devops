@@ -118,6 +118,7 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands='start')
 async def random_movie(message: types.Message):
+    """Shows a random movie card with inline buttons."""
 
     message_list = random_movie_value()
     image_link = message_list[0]
@@ -131,9 +132,12 @@ async def random_movie(message: types.Message):
                          reply_markup=random_movie_buttons(name_year))
 
 
-# Handler for react on inline buttons with callback_data="next_movie".
 @dp.callback_query_handler(text="next_movie")
 async def send_random_value(callback_query: types.CallbackQuery):
+    """Update a random movie card with inline buttons.
+    This function activates after pressing an inline
+    button "next movie".
+    """
 
     message_list = random_movie_value()
     image_link = message_list[0]
@@ -149,15 +153,3 @@ async def send_random_value(callback_query: types.CallbackQuery):
 if __name__ == '__main__':
     print('It is working!')
     executor.start_polling(dp, skip_updates=True)
-
-
-
-
-
-
-
-
-
-
-
-

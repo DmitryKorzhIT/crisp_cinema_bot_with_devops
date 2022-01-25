@@ -1,7 +1,15 @@
 from datetime import datetime
 
-# Convert .json format to pandas.DataFrame with editing countries and genres attributes.
+
 def json_to_csv(json_result, attributes, movies_df):
+    """Convert .json format to pandas.DataFrame.
+
+    Remove movies with empty year, kinopoisk rating
+    or name data.
+
+    Convert countries and genres from dictionary to
+    list format.
+    """
 
     for movie in range(len(json_result['items'])):
 
@@ -11,6 +19,7 @@ def json_to_csv(json_result, attributes, movies_df):
         # Check, do we have rating data.
         elif json_result['items'][movie]['ratingKinopoisk'] == None:
             continue
+        # Check, do we have russian name data.
         elif json_result['items'][movie]['nameRu'] == None:
             continue
 
