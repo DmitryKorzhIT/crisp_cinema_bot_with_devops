@@ -32,6 +32,13 @@ page_value = 1
 order_value = 'NUM_VOTE'
 
 
+# Remove old data.
+if os.path.isfile('./.data/data_v.1.0.csv'):
+    os.remove('./.data/data_v.1.0.csv')
+if os.path.isfile('./.data/data_v.1.0_log.log'):
+    os.remove('./.data/data_v.1.0_log.log')
+
+
 # Scraping part.
 for year in range(year_from_value,year_to_value):
     for rating in range(rating_from_value, rating_to_value):

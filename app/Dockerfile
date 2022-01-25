@@ -1,4 +1,6 @@
-#docker build --build-arg app_bot_token=your_telegram_bot_token -t app:1 .    <--- command to make a docker build
+#docker build --build-arg app_bot_token=your_telegram_bot_token -t app:1 .    <--- command to make a docker build. Use it!
+#docker run --env TOKEN=<...> bot    <--- this is my own command. You don't have to use it!
+
 
 FROM python:3.8
 
