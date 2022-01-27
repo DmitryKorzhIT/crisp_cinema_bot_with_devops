@@ -93,6 +93,12 @@ def filter_only_good_movies():
         if command == 'delete':
             df = df.drop(i, axis=0)
 
+    # Remove an old index column.
+    df = df.drop(['my_index'], axis=1)
+
+    # Insert a new index column.
+    df.insert(loc=0, column='my_index', value=range(1, len(df) + 1))
+
     # Save data to a .csv file.
     df.to_csv('./.data/data_v.3.1.csv', index=False)
 
