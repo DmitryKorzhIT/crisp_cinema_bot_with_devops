@@ -1,6 +1,8 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.utils.markdown import hbold
 from aiogram.dispatcher.filters import Text
+from pprint import pprint
+import psycopg2
 import pandas as pd
 import numpy as np
 import os
@@ -151,5 +153,5 @@ async def send_random_value(callback_query: types.CallbackQuery):
 
 
 if __name__ == '__main__':
-    print('It is working!')
+    print('\nIt is working!\n')
     executor.start_polling(dp, skip_updates=True)

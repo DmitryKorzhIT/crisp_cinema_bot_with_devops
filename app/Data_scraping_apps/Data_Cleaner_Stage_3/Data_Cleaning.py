@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
+from sqlalchemy import create_engine
+import psycopg2
 
+
+# Create database.
+engine = create_engine("postgresql://postgres:1@localhost/telegram_bot_db")
 
 # Load data for cleaning.
 df = pd.read_csv('./.data/data_v.2.0.csv')
@@ -37,5 +42,23 @@ try:
 except:
     pass
 
-# Save data.
-df.to_csv('./.data/data_v.3.0.csv', index=False)
+
+# Save data to a .csv file.
+# df.to_csv('./.data/data_v.3.0.csv', index=False)
+
+# Insert index column.
+df.insert(loc=0, column='myIndex', value=range(1, len(df) + 1))
+
+# Rename columns.
+df.rename(columns={'myIndex': 'my_index',
+                   'nameRu': 'name_ru',
+                   'ratingKinopoisk': 'rating_kinopoisk',
+                   'ratingKinopoiskVoteCount': 'rating_kinopoisk_vote_count',
+                   'filmLength': 'film_length',
+                   'ratingAgeLimits': 'rating_age_limits',
+                   'kinopoiskId': 'kinopoisk_id',
+                   'posterUrl': 'poster_url'}, inplace=True)
+df.info()
+
+# Save data to a PostgreSQL database.
+df.to_sql('telegram_bot_db', engine, if_exists='replace', index=False)
