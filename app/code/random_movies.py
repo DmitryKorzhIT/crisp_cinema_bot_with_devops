@@ -128,9 +128,10 @@ def random_movie_buttons(name_year):
     """
 
     # Message inline buttons.
-    buttons = [types.InlineKeyboardButton('Трейлер', url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
+    buttons = [types.InlineKeyboardButton('\U0001F4D4', callback_data="from_random_movies_add_movie_to_my_movies_list"),
+               types.InlineKeyboardButton('Трейлер', url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
                types.InlineKeyboardButton(text=">", callback_data="next_movie")]
-    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard = types.InlineKeyboardMarkup(row_width=3)
     keyboard.add(*buttons)
 
     return keyboard

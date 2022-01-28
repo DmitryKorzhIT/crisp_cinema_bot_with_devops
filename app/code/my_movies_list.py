@@ -19,7 +19,28 @@ conn = psycopg2.connect(f'dbname={DB_DBNAME} user={DB_USER} password={DB_PASSWOR
 cursor = conn.cursor()
 
 
-def
+def my_movies_list_buttons():
+    """Two inline buttons: "Trailer" and ">" (next movie).
+    These two buttons uses with a movie message.
+
+    The "Trailer" button direct User on youtube.com page
+    with a trailer for a particular movie.
+
+    The ">" (next movie) button updates a movie message.
+    """
+
+    # Message inline buttons.
+    buttons = [types.InlineKeyboardButton(text="<", callback_data="my_movies_list_buttons_previous_page"),
+               types.InlineKeyboardButton(text="2", callback_data="my_movies_list_buttons_current_page"),
+               types.InlineKeyboardButton(text=">", callback_data="my_movies_list_buttons_next_page")]
+    keyboard = types.InlineKeyboardMarkup(row_width=3)
+    keyboard.add(*buttons)
+
+    return keyboard
+
+
+# def add_to_my_movies_list():
+#
 
 
 
