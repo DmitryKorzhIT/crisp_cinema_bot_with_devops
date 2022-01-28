@@ -134,8 +134,3 @@ def random_movie_buttons(name_year):
     keyboard.add(*buttons)
 
     return keyboard
-
-
-
-random_movie_value()
-

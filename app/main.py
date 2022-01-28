@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import os
 
-from code.message_movie import random_movie_value, random_movie_buttons
+from code.random_movies import random_movie_value, random_movie_buttons
 
 
 APP_BOT_TOKEN = os.getenv("APP_BOT_TOKEN")
@@ -18,7 +18,7 @@ dp = Dispatcher(bot)
 
 #
 #
-# # Handler for pressing a "type of movies" button.
+# Handler for pressing a "type of movies" button.
 # @dp.message_handler(commands='start')
 # async def type_of_movies_button(message: types.Message):
 #     buttons = ['Фильмы / Сериалы', 'Пропустить Ф/С']
@@ -118,7 +118,22 @@ dp = Dispatcher(bot)
 #
 
 
+# Menu after '/start' command.
 @dp.message_handler(commands='start')
+async def start_menu(message: types.Message):
+
+    buttons = [types.InlineKeyboardButton('\U0001F3B2Random movies', callback_data="start_menu_random_movies"),
+               types.InlineKeyboardButton('\U0001F4D2My movies', callback_data="start_menu_my_movies_list")]
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(*buttons)
+
+    await bot.send_message(message.from_user.id,
+                           text='123',
+                           reply_markup=keyboard)
+
+
+# Show a random movie message.
+@dp.callback_query_handler(text="start_menu_random_movies")
 async def random_movie(message: types.Message):
     """Shows a random movie card with inline buttons."""
 
@@ -127,15 +142,16 @@ async def random_movie(message: types.Message):
     text_value = message_list[1]
     name_year = message_list[2]
 
-    await bot.send_photo(message.chat.id,
+    await bot.send_photo(chat_id=message.from_user.id,
                          parse_mode=types.ParseMode.HTML,
                          photo=image_link,
                          caption=text_value,
                          reply_markup=random_movie_buttons(name_year))
+    await bot.delete_message(message.from_user.id, message.message.message_id)
 
 
 @dp.callback_query_handler(text="next_movie")
-async def send_random_value(callback_query: types.CallbackQuery):
+async def update_random_movie(callback_query: types.CallbackQuery):
     """Update a random movie card with inline buttons.
     This function activates after pressing an inline
     button "next movie".
