@@ -13,6 +13,7 @@ from code.my_movies_list import my_movies_list_buttons
 from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
 
 
+# Telegram bot settings.
 APP_BOT_TOKEN = os.getenv("APP_BOT_TOKEN")
 
 bot = Bot(token=APP_BOT_TOKEN, parse_mode=types.ParseMode.HTML)
@@ -135,6 +136,11 @@ async def start_menu(message: types.Message):
                            reply_markup=start_menu_buttons())
 
 
+
+#==============================================================================================#
+#=====================================    Random movie    =====================================#
+#==============================================================================================#
+
 # Show a random movie message.
 @dp.callback_query_handler(text="show_random_movies")
 async def random_movie(message: types.Message):
@@ -146,7 +152,7 @@ async def random_movie(message: types.Message):
     name_year = message_list[2]
     kinopoisk_id = message_list[3]
 
-    # Function to write inforamtion into the database about the last users movie.
+    # Function for write inforamtion into the database about the last users movie.
     current_movie_to_db(user_id=message.from_user.id,
                         kinopoisk_id=kinopoisk_id)
 
@@ -158,6 +164,7 @@ async def random_movie(message: types.Message):
     await bot.delete_message(message.from_user.id, message.message.message_id)
 
 
+# The "next movie" inline button.
 @dp.callback_query_handler(text="next_movie")
 async def update_random_movie(callback_query: types.CallbackQuery):
     """Update a random movie card with inline buttons.
@@ -171,7 +178,7 @@ async def update_random_movie(callback_query: types.CallbackQuery):
     name_year = message_list[2]
     kinopoisk_id = message_list[3]
 
-    # Function to write inforamtion into the database about the last users movie.
+    # Function for write inforamtion into the database about the last users movie.
     current_movie_to_db(user_id=callback_query.message.chat.id,
                         kinopoisk_id=kinopoisk_id)
 
@@ -181,7 +188,41 @@ async def update_random_movie(callback_query: types.CallbackQuery):
                                  reply_markup=random_movie_buttons(name_year))
 
 
-# Show my movies list.
+
+#==============================================================================================#
+#====================================    My movies list    ====================================#
+#==============================================================================================#
+
+# Add a movie to my movies list.
+@dp.callback_query_handler(text='to_my_movies_list')
+async def to_my_movies_list_function(callback_query: types.CallbackQuery):
+    """This function adds a random movie
+    to my_movies_list in the database."""
+
+    # Pull data about movie's kinopoisk_id.
+    user_id = callback_query.message.chat.id
+    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_users_last_movie WHERE user_id='{user_id}'")
+    kinopoisk_id = cursor.fetchall()[0][0]
+
+    # Check if the movie already in my_movies_list.
+    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list "
+                   f"WHERE user_id='{user_id}' AND kinopoisk_id='{kinopoisk_id}'")
+    movie_existance = cursor.fetchall()
+
+    # If the movie not in my_movies_list - add it!
+    if len(movie_existance) == 0:
+        cursor.execute(f"INSERT INTO telegram_bot_my_movies_list VALUES ('{user_id}', '{kinopoisk_id}')")
+        conn.commit()
+        await callback_query.answer(text='Фильм добавлен в вашу библиотеку!',
+                                    cache_time=0)
+
+    # If the movie already in my_movies_list - don't add it!
+    else:
+        await callback_query.answer(text='Этот фильм уже находится в вашей библиотеке!',
+                                    cache_time=0)
+
+
+# Show my_movies_list.
 @dp.callback_query_handler(text="show_my_movies_list")
 async def my_movies_list(callback_query: types.CallbackQuery):
     """Show my movie list with inline buttons."""
@@ -189,28 +230,6 @@ async def my_movies_list(callback_query: types.CallbackQuery):
     await callback_query.answer()
     await callback_query.message.answer('My movies list!\n\nYou have no movies yet.',
                                         reply_markup = my_movies_list_buttons())
-
-
-# Add a movie to my movies list.
-@dp.callback_query_handler(text='to_my_movies_list')
-async def to_my_movies_list_function(callback_query: types.CallbackQuery):
-    """This function shows random movies and adds
-    a movie to my movies list in the database."""
-
-    user_id = callback_query.message.chat.id
-    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_users_last_movie WHERE user_id={user_id}")
-    kinopoisk_id = cursor.fetchall()[0][0]
-    print('Users movie id:', kinopoisk_id, '\n')
-
-    cursor.execute(f"INSERT INTO telegram_bot_my_movies_list VALUES ('{user_id}', '{kinopoisk_id}')")
-    conn.commit()
-
-    await callback_query.answer(text='Фильм добавлен в вашу библиотеку!',
-                                cache_time=0)
-    # await callback_query.message.answer(f'Answer on my movies list. Your_id is "{user_id}".')
-
-
-
 
 
 if __name__ == '__main__':
