@@ -24,7 +24,7 @@ def my_movies_list_buttons():
     These two buttons uses with a movie message.
 
     The "Trailer" button direct User on youtube.com page
-    with a trailer for a particular movie.
+   with a trailer for a particular movie.
 
     The ">" (next movie) button updates a movie message.
     """

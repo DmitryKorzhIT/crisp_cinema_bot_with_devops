@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import os
 
-from code.random_movies import random_movie_value, random_movie_buttons
+from code.random_movies import random_movie_value, current_movie_to_db, random_movie_buttons
 from code.start_menu import start_menu_buttons
 from code.my_movies_list import my_movies_list_buttons
 
@@ -139,6 +139,11 @@ async def random_movie(message: types.Message):
     image_link = message_list[0]
     text_value = message_list[1]
     name_year = message_list[2]
+    kinopoisk_id = message_list[3]
+
+    # Function to write inforamtion into the database about the last users movie.
+    current_movie_to_db(user_id=message.from_user.id,
+                        kinopoisk_id=kinopoisk_id)
 
     await bot.send_photo(chat_id=message.from_user.id,
                          parse_mode=types.ParseMode.HTML,
@@ -159,6 +164,11 @@ async def update_random_movie(callback_query: types.CallbackQuery):
     image_link = message_list[0]
     text_value = message_list[1]
     name_year = message_list[2]
+    kinopoisk_id = message_list[3]
+
+    # Function to write inforamtion into the database about the last users movie.
+    current_movie_to_db(user_id=callback_query.message.chat.id,
+                        kinopoisk_id=kinopoisk_id)
 
     await bot.edit_message_media(media=types.InputMediaPhoto(image_link, caption=text_value),
                                  chat_id=callback_query.message.chat.id,
@@ -172,14 +182,18 @@ async def my_movies_list(callback_query: types.CallbackQuery):
     """Show my movie list with inline buttons."""
 
     await callback_query.answer()
-    await callback_query.message.answer('Hello, you!',
+    await callback_query.message.answer('My movies list!\n\nYou have no movies yet.',
                                         reply_markup = my_movies_list_buttons())
 
 
-# dp.callback_query_handler(text='from_random_movies_add_movie_to_my_movies_list')
-# async def from_random_movies_add_movie_to_my_movies_list(callback_query: types.CallbackQuery):
-#     """This function shows for random movies and
-#     add a movie to my movies list in database."""
+@dp.callback_query_handler(text='to_my_movies_list')
+async def to_my_movies_list_function(kinoposk_id, callback_query: types.CallbackQuery):
+    """This function shows random movies and adds
+    a movie to my movies list in the database."""
+    a = update_random_movie.text_value
+    user_id = callback_query.message.chat.id
+    await callback_query.answer(cache_time=0)
+    await callback_query.message.answer(f'Answer on my movies list. Your_id is "{a}".')
 
 
 

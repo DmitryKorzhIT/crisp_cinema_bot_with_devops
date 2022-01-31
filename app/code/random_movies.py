@@ -112,10 +112,15 @@ def random_movie_value():
     name_year = name_year.replace(" ", "+")
 
     # Return movie poster, movie text and name with year in list format.
-    message_list = [image_link, text_value, name_year]
+    message_list = [image_link, text_value, name_year, movie_dict['kinopoisk_id']]
 
     return message_list
 
+
+def current_movie_to_db(user_id, kinopoisk_id):
+    print(f'User_id: {user_id}, Kinopoisk_id: {kinopoisk_id}.')
+    cursor.execute(f"INSERT INTO telegram_bot_my_movies_list VALUES ('{user_id}', '{kinopoisk_id}')")
+    conn.commit()
 
 def random_movie_buttons(name_year):
     """Two inline buttons: "Trailer" and ">" (next movie).
@@ -128,7 +133,7 @@ def random_movie_buttons(name_year):
     """
 
     # Message inline buttons.
-    buttons = [types.InlineKeyboardButton('\U0001F4D4', callback_data="from_random_movies_add_movie_to_my_movies_list"),
+    buttons = [types.InlineKeyboardButton('\U0001F4D4', callback_data="to_my_movies_list"),
                types.InlineKeyboardButton('Трейлер', url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
                types.InlineKeyboardButton(text=">", callback_data="next_movie")]
     keyboard = types.InlineKeyboardMarkup(row_width=3)
