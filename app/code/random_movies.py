@@ -119,8 +119,21 @@ def random_movie_value():
 
 def current_movie_to_db(user_id, kinopoisk_id):
     print(f'User_id: {user_id}, Kinopoisk_id: {kinopoisk_id}.')
-    cursor.execute(f"INSERT INTO telegram_bot_my_movies_list VALUES ('{user_id}', '{kinopoisk_id}')")
-    conn.commit()
+
+    cursor.execute(f"SELECT user_id FROM telegram_bot_users_movies_history WHERE user_id={user_id}")
+    user_id_existance = cursor.fetchall()
+    if len(user_id_existance) == 0:
+        print('Bigger then zero! Len:', len(user_id_existance))
+        cursor.execute(f"INSERT INTO telegram_bot_users_movies_history VALUES ('{user_id}', '{kinopoisk_id}')")
+        conn.commit()
+    else:
+        cursor.execute(f"UPDATE telegram_bot_users_movies_history SET kinopoisk_id = '{kinopoisk_id}' WHERE user_id = '{user_id}';")
+        conn.commit()
+
+    print(f'If user id exist: {user_id_existance}.')
+
+
+
 
 def random_movie_buttons(name_year):
     """Two inline buttons: "Trailer" and ">" (next movie).
