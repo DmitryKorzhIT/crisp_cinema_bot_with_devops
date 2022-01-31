@@ -9,7 +9,7 @@ import os
 
 from code.random_movies import random_movie_value, current_movie_to_db, random_movie_buttons
 from code.start_menu import start_menu_buttons
-from code.my_movies_list import my_movies_list_buttons
+from code.my_movies_list import my_movies_list_buttons, show_my_movies_list_in_list_view_function
 from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
 
 
@@ -225,10 +225,12 @@ async def to_my_movies_list_function(callback_query: types.CallbackQuery):
 # Show my_movies_list.
 @dp.callback_query_handler(text="show_my_movies_list")
 async def my_movies_list(callback_query: types.CallbackQuery):
-    """Show my movie list with inline buttons."""
+    """Show my_movie_list with inline buttons."""
 
+    user_id = callback_query.message.chat.id
+    my_movies_string = show_my_movies_list_in_list_view_function(user_id)
     await callback_query.answer()
-    await callback_query.message.answer('My movies list!\n\nYou have no movies yet.',
+    await callback_query.message.answer(f'{my_movies_string}',
                                         reply_markup = my_movies_list_buttons())
 
 
