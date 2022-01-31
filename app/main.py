@@ -10,12 +10,17 @@ import os
 from code.random_movies import random_movie_value, current_movie_to_db, random_movie_buttons
 from code.start_menu import start_menu_buttons
 from code.my_movies_list import my_movies_list_buttons
+from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
 
 
 APP_BOT_TOKEN = os.getenv("APP_BOT_TOKEN")
 
 bot = Bot(token=APP_BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
+
+# PostgreSQL database settings.
+conn = psycopg2.connect(f'dbname={DB_DBNAME} user={DB_USER} password={DB_PASSWORD} host={DB_HOST}')
+cursor = conn.cursor()
 
 
 #
@@ -186,14 +191,23 @@ async def my_movies_list(callback_query: types.CallbackQuery):
                                         reply_markup = my_movies_list_buttons())
 
 
+# Add a movie to my movies list.
 @dp.callback_query_handler(text='to_my_movies_list')
-async def to_my_movies_list_function(kinoposk_id, callback_query: types.CallbackQuery):
+async def to_my_movies_list_function(callback_query: types.CallbackQuery):
     """This function shows random movies and adds
     a movie to my movies list in the database."""
-    a = update_random_movie.text_value
+
     user_id = callback_query.message.chat.id
-    await callback_query.answer(cache_time=0)
-    await callback_query.message.answer(f'Answer on my movies list. Your_id is "{a}".')
+    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_users_last_movie WHERE user_id={user_id}")
+    kinopoisk_id = cursor.fetchall()[0][0]
+    print('Users movie id:', kinopoisk_id, '\n')
+
+    cursor.execute(f"INSERT INTO telegram_bot_my_movies_list VALUES ('{user_id}', '{kinopoisk_id}')")
+    conn.commit()
+
+    await callback_query.answer(text='Фильм добавлен в вашу библиотеку!',
+                                cache_time=0)
+    # await callback_query.message.answer(f'Answer on my movies list. Your_id is "{user_id}".')
 
 
 
