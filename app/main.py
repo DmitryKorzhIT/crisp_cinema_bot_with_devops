@@ -11,6 +11,8 @@ from code.random_movies import random_movie_value, current_movie_to_db, random_m
 from code.start_menu import start_menu_buttons
 from code.my_movies_list import my_movies_list_buttons, show_my_movies_list_in_list_view_function
 from code.my_movies_list import to_my_movies_list_second_function
+from code.my_movies_cards import my_movies_list_in_cards_view_buttons
+from code.my_movies_cards import show_my_movies_list_in_cards_view_function
 from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
 
 
@@ -239,6 +241,23 @@ async def my_movies_list(callback_query: types.CallbackQuery):
     await callback_query.answer()
     await callback_query.message.answer(my_movies_string,
                                         reply_markup = my_movies_list_buttons())
+
+
+# Show my_movies_list in cards view.
+@dp.callback_query_handler(text="show_my_movies_list_in_cards_view")
+async def my_movies_list_in_cards_view(callback_query: types.CallbackQuery):
+    """Show my_movie_list in cards view
+    with inline buttons."""
+
+    # Pull data about user's id.
+    user_id = callback_query.message.chat.id
+
+    # Call a function to show my_movies_list in cards view.
+    my_movies_string = show_my_movies_list_in_cards_view_function(user_id)
+
+    await callback_query.answer()
+    await callback_query.message.answer(my_movies_string,
+                                        reply_markup = my_movies_list_in_cards_view_buttons())
 
 
 if __name__ == '__main__':
