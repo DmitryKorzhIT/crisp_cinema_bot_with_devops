@@ -19,6 +19,35 @@ conn = psycopg2.connect(f'dbname={DB_DBNAME} user={DB_USER} password={DB_PASSWOR
 cursor = conn.cursor()
 
 
+# Add a movie to my movies list.
+def to_my_movies_list_second_function(user_id):
+    """This function adds a random movie
+    to my_movies_list in the database."""
+
+    # Pull data about movie's kinopoisk_id.
+    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_users_last_movie WHERE user_id='{user_id}'")
+    kinopoisk_id = cursor.fetchall()[0][0]
+
+    # Check if the movie already in my_movies_list.
+    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list "
+                   f"WHERE user_id='{user_id}' AND kinopoisk_id='{kinopoisk_id}'")
+    movie_existence = cursor.fetchall()
+
+    # If the movie not in my_movies_list - add it!
+    if len(movie_existence) == 0:
+        cursor.execute(f"INSERT INTO telegram_bot_my_movies_list VALUES ('{user_id}', '{kinopoisk_id}')")
+        conn.commit()
+        text_value='Фильм добавлен в вашу библиотеку!'
+
+    # If the movie already in my_movies_list - don't add it!
+    else:
+        text_value='Этот фильм уже находится в вашей библиотеке!'
+
+    # Return a message for user.
+    return text_value
+
+
+# Show my_movies_list.
 def show_my_movies_list_in_list_view_function(user_id):
     """Show user's my_movies_list."""
 
@@ -58,6 +87,7 @@ def show_my_movies_list_in_list_view_function(user_id):
         # Append a movie to string with other movies.
         my_movies_string += str(text_value)
 
+    # Return a string with all movies from the my_movies_list.
     return my_movies_string
 
 #
@@ -127,15 +157,14 @@ def show_my_movies_list_in_list_view_function(user_id):
 
 
 def my_movies_list_buttons():
-    """Inline buttons:
-
+    """Inline buttons for "my_movies_list":
     • Previous movie.
     • Trailer.
     • Next movie.
     • Remove from my_movies_list
     """
 
-    # Message inline buttons.
+    # Inline keyboard.
     buttons = [types.InlineKeyboardButton(text="<", callback_data="my_movies_list_buttons_previous_page"),
                types.InlineKeyboardButton(text="Трейлер", url='https://www.youtube.com'),  # url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
                types.InlineKeyboardButton(text=">", callback_data="my_movies_list_buttons_next_page"),
@@ -143,6 +172,7 @@ def my_movies_list_buttons():
     keyboard = types.InlineKeyboardMarkup(row_width=3)
     keyboard.add(*buttons)
 
+    # Return an inline keyboard.
     return keyboard
 
 
