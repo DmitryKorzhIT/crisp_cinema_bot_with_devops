@@ -17,13 +17,13 @@ cursor = conn.cursor()
 
 
 # Add a movie to my movies list.
-def to_my_movies_list_second_function(user_id):
+def to_my_movies_list_second_function(user_id, kinopoisk_id):
     """This function adds a random movie
     to my_movies_list in the database."""
 
-    # Pull data about movie's kinopoisk_id.
-    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_users_last_movie WHERE user_id='{user_id}'")
-    kinopoisk_id = cursor.fetchall()[0][0]
+    # # Pull data about movie's kinopoisk_id.
+    # cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_users_last_movie WHERE user_id='{user_id}'")
+    # kinopoisk_id = cursor.fetchall()[0][0]
 
     # Check if the movie already in my_movies_list.
     cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list "
@@ -59,8 +59,10 @@ def show_my_movies_list_in_list_view_function(user_id):
     my_movies_string = str(f"{hbold('My movies list:')}\n\n")
 
     # Pull movies from my_movies_list.
-    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list WHERE user_id='{user_id}'")
+    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list WHERE user_id='{user_id}' "
+                   f"ORDER BY date_time DESC;")
     all_user_movies_list = cursor.fetchall()
+    print('All users movies list:', all_user_movies_list)
 
     # For each movie from my_movies_list.
     for i in all_user_movies_list:

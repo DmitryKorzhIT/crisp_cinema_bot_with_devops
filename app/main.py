@@ -1,6 +1,8 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.utils.markdown import hbold
 from aiogram.dispatcher.filters import Text
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher import FSMContext
 from pprint import pprint
 import psycopg2
 import pandas as pd
@@ -20,7 +22,7 @@ from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
 APP_BOT_TOKEN = os.getenv("APP_BOT_TOKEN")
 
 bot = Bot(token=APP_BOT_TOKEN, parse_mode=types.ParseMode.HTML)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=MemoryStorage())
 
 # PostgreSQL database settings.
 conn = psycopg2.connect(f'dbname={DB_DBNAME} user={DB_USER} password={DB_PASSWORD} host={DB_HOST}')
@@ -140,11 +142,11 @@ async def start_menu(message: types.Message):
 
 
 
-#==============================================================================================#
-#=====================================    Random movie    =====================================#
-#==============================================================================================#
+#============================================================================================#
+#==================================👉    Random movie    👈==================================#
+#============================================================================================#
 
-# Show a random movie message.
+# 📍Show a random movie message.
 @dp.callback_query_handler(text="show_random_movies")
 async def random_movie(message: types.Message):
     """The function shows the first message with a random movie.
@@ -175,9 +177,9 @@ async def random_movie(message: types.Message):
     await bot.delete_message(message.from_user.id, message.message.message_id)
 
 
-# The "next movie" inline button.
+# 📍The "next movie" inline button.
 @dp.callback_query_handler(text="next_movie")
-async def update_random_movie(callback_query: types.CallbackQuery):
+async def update_random_movie(callback_query: types.CallbackQuery, state: FSMContext):
     """The function updates a random movie card after pressing
     an inline button "next movie".
 
@@ -195,6 +197,9 @@ async def update_random_movie(callback_query: types.CallbackQuery):
     name_year = message_list[2]
     kinopoisk_id = message_list[3]
 
+    async with state.proxy() as data:
+        data['current_movie_id']=kinopoisk_id
+
     # Function to write information into the database about the last user's movie.
     current_movie_to_db(user_id=callback_query.message.chat.id,
                         kinopoisk_id=kinopoisk_id)
@@ -206,13 +211,13 @@ async def update_random_movie(callback_query: types.CallbackQuery):
 
 
 
-#==============================================================================================#
-#====================================    My movies list    ====================================#
-#==============================================================================================#
+#============================================================================================#
+#=================================👉    My movies list    👈=================================#
+#============================================================================================#
 
-# Add movies to my_movies_list.
+# 📍Add movies to my_movies_list.
 @dp.callback_query_handler(text='to_my_movies_list')
-async def to_my_movies_list_function(callback_query: types.CallbackQuery):
+async def to_my_movies_list_function(callback_query: types.CallbackQuery, state: FSMContext):
     """This handler call a function to_my_movies_list_second_function.
 
     The function "to_my_movies_list_second_function" - adds
@@ -221,43 +226,72 @@ async def to_my_movies_list_function(callback_query: types.CallbackQuery):
 
     # Get a user_id and call the function.
     user_id = callback_query.message.chat.id
-    text_value = to_my_movies_list_second_function(user_id)
+    async with state.proxy() as data:
+        kinopoisk_id = data['current_movie_id']
+
+    text_value = to_my_movies_list_second_function(user_id, kinopoisk_id)
 
     await callback_query.answer(text=text_value,
                                 cache_time=0)
 
 
-# Show my_movies_list.
-@dp.callback_query_handler(text="show_my_movies_list")
-async def my_movies_list(callback_query: types.CallbackQuery):
-    """Show my_movie_list with inline buttons."""
+# # 📍Show my_movies_list.
+# @dp.callback_query_handler(text="show_my_movies_list")
+# async def my_movies_list(callback_query: types.CallbackQuery):
+#     """Show my_movie_list with inline buttons."""
+#
+#     # Pull data about user's id.
+#     user_id = callback_query.message.chat.id
+#
+#     # Call a function to show my_movies_list.
+#     my_movies_string = show_my_movies_list_in_list_view_function(user_id)
+#
+#     await callback_query.answer()
+#     await callback_query.message.answer(my_movies_string,
+#                                         reply_markup = my_movies_list_buttons())
 
-    # Pull data about user's id.
-    user_id = callback_query.message.chat.id
 
-    # Call a function to show my_movies_list.
-    my_movies_string = show_my_movies_list_in_list_view_function(user_id)
+# # 📍Show my_movies_list in cards view.
+# @dp.callback_query_handler(text="show_my_movies_list_in_cards_view")
+# async def my_movies_list_in_cards_view(callback_query: types.CallbackQuery):
+#     """Show my_movie_list in cards view
+#     with inline buttons."""
+#
+#     # Pull data about user's id.
+#     user_id = callback_query.message.chat.id
+#
+#     # Call a function to show my_movies_list in cards view.
+#     my_movies_string = show_my_movies_list_in_cards_view_function(user_id)
+#
+#     await callback_query.answer()
+#     await callback_query.message.answer(my_movies_string,
+#                                         reply_markup = my_movies_list_in_cards_view_buttons())
 
-    await callback_query.answer()
-    await callback_query.message.answer(my_movies_string,
-                                        reply_markup = my_movies_list_buttons())
 
 
-# Show my_movies_list in cards view.
+
+# 📍Show my_movies_list in cards view.
 @dp.callback_query_handler(text="show_my_movies_list_in_cards_view")
-async def my_movies_list_in_cards_view(callback_query: types.CallbackQuery):
-    """Show my_movie_list in cards view
-    with inline buttons."""
+async def my_movies_list_in_cards_view(message: types.Message):
+    """Show the first movie from the my_movie_list
+    in a card view with inline buttons.
+    """
 
     # Pull data about user's id.
-    user_id = callback_query.message.chat.id
+    user_id = message.from_user.id
 
-    # Call a function to show my_movies_list in cards view.
-    my_movies_string = show_my_movies_list_in_cards_view_function(user_id)
+    # Pull information about a movie from the my_movies_list.
+    message_list = show_my_movies_list_in_cards_view_function(user_id)
+    image_link = message_list[0]
+    text_value = message_list[1]
+    name_year = message_list[2]
 
-    await callback_query.answer()
-    await callback_query.message.answer(my_movies_string,
-                                        reply_markup = my_movies_list_in_cards_view_buttons())
+    await bot.send_photo(chat_id=message.from_user.id,
+                         parse_mode=types.ParseMode.HTML,
+                         photo=image_link,
+                         caption=text_value,
+                         reply_markup=random_movie_buttons(name_year))
+    await bot.delete_message(message.from_user.id, message.message.message_id)
 
 
 if __name__ == '__main__':
