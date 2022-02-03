@@ -117,20 +117,6 @@ def random_movie_value():
     return message_list
 
 
-def current_movie_to_db(user_id, kinopoisk_id):
-
-    cursor.execute(f"SELECT user_id FROM telegram_bot_users_last_movie WHERE user_id={user_id}")
-    user_id_existance = cursor.fetchall()
-    if len(user_id_existance) == 0:
-        cursor.execute(f"INSERT INTO telegram_bot_users_last_movie VALUES ('{user_id}', '{kinopoisk_id}')")
-        conn.commit()
-    else:
-        cursor.execute(f"UPDATE telegram_bot_users_last_movie SET kinopoisk_id = '{kinopoisk_id}' WHERE user_id = '{user_id}';")
-        conn.commit()
-
-
-
-
 def random_movie_buttons(name_year):
     """Two inline buttons: "Trailer" and ">" (next movie).
     These two buttons uses with a movie message.

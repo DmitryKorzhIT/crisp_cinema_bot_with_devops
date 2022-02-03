@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import os
 
-from code.random_movies import random_movie_value, current_movie_to_db, random_movie_buttons
+from code.random_movies import random_movie_value, random_movie_buttons
 from code.start_menu import start_menu_buttons
 from code.my_movies_list import my_movies_list_buttons, show_my_movies_list_in_list_view_function
 from code.my_movies_list import to_my_movies_list_second_function
@@ -131,7 +131,7 @@ cursor = conn.cursor()
 #
 
 
-# Menu after '/start' command.
+# 📍Menu after '/start' command.
 @dp.message_handler(commands='start')
 async def start_menu(message: types.Message):
     """Show a menu after "/start" command."""
@@ -165,10 +165,6 @@ async def random_movie(message: types.Message):
     name_year = message_list[2]
     kinopoisk_id = message_list[3]
 
-    # Function to write information into the database about the last user's movie.
-    current_movie_to_db(user_id=message.from_user.id,
-                        kinopoisk_id=kinopoisk_id)
-
     await bot.send_photo(chat_id=message.from_user.id,
                          parse_mode=types.ParseMode.HTML,
                          photo=image_link,
@@ -199,10 +195,6 @@ async def update_random_movie(callback_query: types.CallbackQuery, state: FSMCon
 
     async with state.proxy() as data:
         data['current_movie_id']=kinopoisk_id
-
-    # Function to write information into the database about the last user's movie.
-    current_movie_to_db(user_id=callback_query.message.chat.id,
-                        kinopoisk_id=kinopoisk_id)
 
     await bot.edit_message_media(media=types.InputMediaPhoto(image_link, caption=text_value),
                                  chat_id=callback_query.message.chat.id,
