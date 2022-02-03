@@ -16,7 +16,7 @@ conn = psycopg2.connect(f'dbname={DB_DBNAME} user={DB_USER} password={DB_PASSWOR
 cursor = conn.cursor()
 
 
-# Add a movie to my movies list.
+# 📍Add a movie to my movies list.
 def to_my_movies_list_second_function(user_id, kinopoisk_id):
     """This function adds a random movie
     to my_movies_list in the database."""
@@ -51,7 +51,7 @@ def to_my_movies_list_second_function(user_id, kinopoisk_id):
     return text_value
 
 
-# Show my_movies_list.
+# 📍Show my_movies_list.
 def show_my_movies_list_in_list_view_function(user_id):
     """Show user's my_movies_list."""
 
@@ -96,72 +96,8 @@ def show_my_movies_list_in_list_view_function(user_id):
     # Return a string with all movies from the my_movies_list.
     return my_movies_string
 
-#
-#
-#     # Get link of the poster.
-#     image_link = movie_dict['poster_url']
-#
-#     # Movie type.
-#     movie_type_eng = movie_dict['type']
-#     if movie_type_eng == 'TV_SERIES':
-#         movie_type = ' (cериал)'
-#     elif movie_type_eng == 'MINI_SERIES':
-#         movie_type = ' (мини-сериал)'
-#     elif movie_type_eng == 'TV_SHOW':
-#         movie_type = ' (ток-шоу)'
-#     else:
-#         movie_type = ''
-#
-#     # Rating kinopoisk vote count.
-#     if movie_dict['rating_kinopoisk_vote_count'] < 1000:
-#         rating_kinopoisk_vote_count = '%.1f' %(movie_dict['rating_kinopoisk_vote_count']/1000)
-#     else:
-#         rating_kinopoisk_vote_count = '%.0f' % (movie_dict['rating_kinopoisk_vote_count'] / 1000)
-#
-#     # Movie length.
-#     film_length = movie_dict['film_length']
-#     if film_length >= 60:
-#         film_length_hours = film_length // 60
-#         film_length_minutes = film_length % 60
-#         film_length = f"{film_length_hours}ч {film_length_minutes}мин"
-#     else:
-#         film_length = f"{film_length} мин"
-#
-#     # Description.
-#     description = str()
-#     description_list = list(movie_dict['description'].split())
-#
-#     if len(description_list) > 30:
-#         for word in description_list[0:30]:
-#             description += word + ' '
-#         description = f"\n\n\U0001F4D6{hcode(' Описание:')} {description}..."
-#
-#     elif len(description_list) == 0:
-#         description = ''
-#
-#     else:
-#         description = f"\n\n\U0001F4D6{hcode(' Описание:')} {movie_dict['description']}"
-#
-#
-#     # Message view using aiogram markdown.
-#     text_value = f"{hbold(movie_dict['name_ru'])} " \
-#                  f"{hbold('(')}{hbold(movie_dict['year'])}{hbold(')')}" \
-#                  f"{hbold(movie_type)}\n\n" \
-#                  f"\U0001F31F{hcode(' Рейтинг:')}   {hbold(movie_dict['rating_kinopoisk'])}\n" \
-#                  f"\U0001F440{hcode(' Оценило:')}   {hbold(rating_kinopoisk_vote_count)}{hbold('K')}\n" \
-#                  f"\U0000231B{hcode(' Время:  ')}   {hbold(film_length)}" \
-#                  f"{description}"
-#
-#     # Name with year in one string for search trailers.
-#     name_year = f"{movie_dict['name_ru']} {movie_dict['year']}"
-#     name_year = name_year.replace(" ", "+")
-#
-#     # Return movie poster, movie text and name with year in list format.
-#     message_list = [image_link, text_value, name_year, movie_dict['kinopoisk_id']]
-#
-#     return message_list
 
-
+# 📍Show my_movies_list inline buttons.
 def my_movies_list_buttons():
     """Inline buttons for "my_movies_list":
     • Previous movie.

@@ -227,7 +227,7 @@ async def to_my_movies_list_function(callback_query: types.CallbackQuery, state:
                                 cache_time=0)
 
 
-# # 📍Show my_movies_list.
+# # Show my_movies_list.
 # @dp.callback_query_handler(text="show_my_movies_list")
 # async def my_movies_list(callback_query: types.CallbackQuery):
 #     """Show my_movie_list with inline buttons."""
@@ -243,26 +243,7 @@ async def to_my_movies_list_function(callback_query: types.CallbackQuery, state:
 #                                         reply_markup = my_movies_list_buttons())
 
 
-# # 📍Show my_movies_list in cards view.
-# @dp.callback_query_handler(text="show_my_movies_list_in_cards_view")
-# async def my_movies_list_in_cards_view(callback_query: types.CallbackQuery):
-#     """Show my_movie_list in cards view
-#     with inline buttons."""
-#
-#     # Pull data about user's id.
-#     user_id = callback_query.message.chat.id
-#
-#     # Call a function to show my_movies_list in cards view.
-#     my_movies_string = show_my_movies_list_in_cards_view_function(user_id)
-#
-#     await callback_query.answer()
-#     await callback_query.message.answer(my_movies_string,
-#                                         reply_markup = my_movies_list_in_cards_view_buttons())
-
-
-
-
-# 📍Show my_movies_list in cards view.
+# 📍Show the first movie from my_movies_list in a cards view.
 @dp.callback_query_handler(text="show_my_movies_list_in_cards_view")
 async def my_movies_list_in_cards_view(message: types.Message):
     """Show the first movie from the my_movie_list

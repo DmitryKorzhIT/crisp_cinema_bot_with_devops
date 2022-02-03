@@ -20,6 +20,7 @@ conn = psycopg2.connect(f'dbname={DB_DBNAME} user={DB_USER} password={DB_PASSWOR
 cursor = conn.cursor()
 
 
+# 📍Show a random movie.
 def random_movie_value():
     """Gives a random movie with all neccessary data.
     This function return a movie card message.
@@ -117,6 +118,7 @@ def random_movie_value():
     return message_list
 
 
+# 📍Inline buttons for random movie.
 def random_movie_buttons(name_year):
     """Two inline buttons: "Trailer" and ">" (next movie).
     These two buttons uses with a movie message.

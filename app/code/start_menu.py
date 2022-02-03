@@ -1,5 +1,7 @@
 from aiogram import types
 
+
+# 📍Inline buttons for start menu.
 def start_menu_buttons():
     """Buttons for menu after "/start" command."""
 

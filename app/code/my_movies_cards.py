@@ -15,24 +15,24 @@ conn = psycopg2.connect(f'dbname={DB_DBNAME} user={DB_USER} password={DB_PASSWOR
 cursor = conn.cursor()
 
 
-# Show my_movies_list in a cards view.
+# 📍Show my_movies_list in a cards view.
 def show_my_movies_list_in_cards_view_function(user_id):
-    """Show user's my_movies_cards."""
+    """Show user's my_movies_cards. Mainly style
+    has been copied from the random_movies.py,
+    random_movie_buttons function.
+    """
 
     # Pull movies from my_movies_list.
     cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list WHERE user_id='{user_id}' "
                    f"ORDER BY date_time DESC;")
     all_user_movies_list = cursor.fetchall()
-    print(f"All user movies list: {all_user_movies_list}")
 
     # kinopoisk_id of the first movie in the my_movies_list.
     kinopoisk_id = all_user_movies_list[0][0]
-    print(f"Kinopoisk_id: {kinopoisk_id}")
 
     # Pull data about one movie.
     cursor.execute(f"SELECT * FROM telegram_bot_good_quality_movies_db WHERE kinopoisk_id={kinopoisk_id};")
     movie_list = list(cursor.fetchall())
-    print(f"Movie_list: {movie_list}")
 
     # Put data about one movie into a dictionary.
     movie_dict = {'my_index': movie_list[0][0],
@@ -48,8 +48,6 @@ def show_my_movies_list_in_cards_view_function(user_id):
                   'countries': movie_list[0][10],
                   'genres': movie_list[0][11],
                   'description': movie_list[0][12]}
-
-    print(f"Movie_dict: {movie_dict}")
 
     # Get link of the poster.
     image_link = movie_dict['poster_url']
@@ -110,25 +108,13 @@ def show_my_movies_list_in_cards_view_function(user_id):
 
     # Return movie poster, movie text and name with year in list format.
     message_list = [image_link, text_value, name_year]
+    from pprint import pprint
+    pprint(message_list)
 
     return message_list
 
 
-
-    # # String with one movie.
-    # text_value = f"• {movie_dict['name_ru']}\n"
-    #
-    # # Append a movie to string with other movies.
-    # my_movies_string += str(text_value)
-    #
-    # # Return a string with all movies from the my_movies_list.
-    # return my_movies_string
-
-
-
-
-
-
+# 📍Inline buttons for my_movies_list in cards view.
 def my_movies_list_in_cards_view_buttons():
     """Inline buttons for my_movies_list in cards view:
     • Previous movie.
