@@ -12,7 +12,9 @@ import os
 from code.random_movies import random_movie_value, random_movie_buttons
 from code.start_menu import start_menu_buttons
 from code.my_movies_list import my_movies_list_buttons, show_my_movies_list_in_list_view_function
-from code.my_movies_list import to_my_movies_list_second_function, users_last_movie_in_my_movies_list_equal_one
+from code.my_movies_cards import to_my_movies_list_second_function, users_last_movie_in_my_movies_list_equal_zero
+from code.my_movies_cards import users_last_movie_in_my_movies_list_plus_one
+from code.my_movies_cards import show_users_last_movie_in_my_movies_list
 from code.my_movies_cards import my_movies_list_in_cards_view_buttons
 from code.my_movies_cards import show_my_movies_list_in_cards_view_function
 from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
@@ -258,14 +260,10 @@ async def my_movies_list_in_cards_view(message: types.Message):
     # Set to "0" a number of movies that a user has watched from my_movies_list.
     users_last_movie_in_my_movies_list_equal_zero(user_id)
 
-    # Pull a list of user's movies from my_movies_list.
-    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list WHERE user_id='{user_id}' "
-                   f"ORDER BY date_time DESC;")
-    all_user_movies_list = cursor.fetchall()
-    print(f"\tAll users movies list: {all_user_movies_list}.\n")
+    kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
 
     # Pull information about a movie from the my_movies_list.
-    message_list = show_my_movies_list_in_cards_view_function(all_user_movies_list)
+    message_list = show_my_movies_list_in_cards_view_function(kinopoisk_id)
     image_link = message_list[0]
     text_value = message_list[1]
     name_year = message_list[2]
@@ -278,18 +276,23 @@ async def my_movies_list_in_cards_view(message: types.Message):
     await bot.delete_message(message.from_user.id, message.message.message_id)
 
 
-    # 📍Show the next movie from my_movies_list in a cards view.
+    # 📍Update a message with the next movie from my_movies_list in a cards view.
     @dp.callback_query_handler(text="my_movies_list_in_cards_view_next_movie")
     async def my_movies_list_in_cards_view_next_movie(callback_query: types.CallbackQuery):
-        """Show the next movie from the my_movie_list
+        """Update a message with the next movie from the my_movie_list
         in a card view with inline buttons.
         """
 
         # Pull data about user's id.
         user_id = callback_query.message.chat.id
 
+        # Update to "+1" a number of movies that a user has watched from my_movies_list.
+        users_last_movie_in_my_movies_list_plus_one(user_id)
+
+        kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
+
         # Pull information about a movie from the my_movies_list.
-        message_list = show_my_movies_list_in_cards_view_function(user_id)
+        message_list = show_my_movies_list_in_cards_view_function(kinopoisk_id)
         image_link = message_list[0]
         text_value = message_list[1]
         name_year = message_list[2]
