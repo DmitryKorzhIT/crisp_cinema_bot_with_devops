@@ -165,70 +165,72 @@ def to_my_movies_list_second_function(user_id, kinopoisk_id):
 def users_last_movie_in_my_movies_list_equal_zero(user_id):
     """This function is an additional function for watching my_movies_list.
      When a user watches my_movies_list I have decided to count
-     all his movies in a range from "0" to the last movie.
+     all his movies in range from "0" to the last movie.
      This function uses when a user presses the button my_movies_list and
      it resets data about the last movie a user has seen to "0".
      Because of this function, a user watches movies, not from the
-     last movie he or she is stopped but from the beginning.
+     last movie he or she is stopped, but from the beginning.
      """
 
+    # Pull user's id from the table "telegram_bot_users_last_movie_in_my_movies_list".
     cursor.execute(f"SELECT user_id FROM telegram_bot_users_last_movie_in_my_movies_list "
                    f"WHERE user_id='{user_id}'")
     number_of_movie_from_my_movies_list = cursor.fetchall()
-    print(f"\tMovie existence: {number_of_movie_from_my_movies_list}.\n")
 
-
+    # Add or update number of a movie to zero.
     if len(number_of_movie_from_my_movies_list) == 0:
         cursor.execute(f"INSERT INTO telegram_bot_users_last_movie_in_my_movies_list VALUES ('{user_id}', '0')")
         conn.commit()
-        print(f"\tMovie existence: User id was added with 0 value.\n")
 
     else:
         cursor.execute(f"UPDATE telegram_bot_users_last_movie_in_my_movies_list "
                        f"SET users_last_movie_number = '0' "
                        f"WHERE user_id='{user_id}';")
         conn.commit()
-        print(f"\tMovie existence: users_last_movie_number updated to 0.\n")
 
 
 # 📍Update to "+1" a number of movies that a user has watched from my_movies_list.
 def users_last_movie_in_my_movies_list_plus_one(user_id):
     """This function is an additional function for watching my_movies_list.
      When a user watches my_movies_list I have decided to count
-     all his movies in a range from "0" to the last movie.
+     all his movies in range from "0" to the last movie.
      This function uses when a user presses the button
      "my_movies_list_in_cards_view_next_movie" and it updates
      data about the last movie a user has seen on "+1".
      """
 
+    # Pull user's last movie number.
     cursor.execute(f"SELECT users_last_movie_number FROM telegram_bot_users_last_movie_in_my_movies_list "
                    f"WHERE user_id='{user_id}'")
     number_of_movie_from_my_movies_list = cursor.fetchall()
-    print(f"\t#301: {number_of_movie_from_my_movies_list}\n")
     number_of_movie_from_my_movies_list = number_of_movie_from_my_movies_list[0][0]
 
+    # "+1" to user's last movie number.
     cursor.execute(f"UPDATE telegram_bot_users_last_movie_in_my_movies_list "
                    f"SET users_last_movie_number='{number_of_movie_from_my_movies_list+1}' "
                    f"WHERE user_id='{user_id}';")
     conn.commit()
-    print(f"\tMovie existence: users_last_movie_number updated to {number_of_movie_from_my_movies_list+1}.\n")
 
 
-# 📍
+# 📍Pull a kinopoisk_id of a movie where user has stopped.
 def show_users_last_movie_in_my_movies_list(user_id):
+    """This function pull number of a movie where user has stopped
+    while has been listing my_movies_list. Then it uses this number
+    to pull a kinopoisk id of this movie."""
 
+    # Pull user's last movie number.
     cursor.execute(f"SELECT users_last_movie_number FROM telegram_bot_users_last_movie_in_my_movies_list "
                    f"WHERE user_id='{user_id}'")
     number_of_movie_from_my_movies_list = cursor.fetchall()
     number_of_movie_from_my_movies_list = number_of_movie_from_my_movies_list[0][0]
-    print(f"\tNumber of movie from my movies list: {number_of_movie_from_my_movies_list}.\n")
 
     # Pull a list of user's movies from my_movies_list.
     cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list WHERE user_id='{user_id}' "
                    f"ORDER BY date_time DESC;")
     all_users_movies_list = cursor.fetchall()
+
+    # Kinopoisk id of a movie where user has stopped.
     kinopoisk_id = all_users_movies_list[number_of_movie_from_my_movies_list][0]
-    print(f"\tKinopoisk id: {kinopoisk_id}.\n")
 
     return kinopoisk_id
 

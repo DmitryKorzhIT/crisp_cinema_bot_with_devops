@@ -260,6 +260,7 @@ async def my_movies_list_in_cards_view(message: types.Message):
     # Set to "0" a number of movies that a user has watched from my_movies_list.
     users_last_movie_in_my_movies_list_equal_zero(user_id)
 
+    # Pull a kinopoisk_id of a movie where user has stopped.
     kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
 
     # Pull information about a movie from the my_movies_list.
@@ -289,6 +290,7 @@ async def my_movies_list_in_cards_view(message: types.Message):
         # Update to "+1" a number of movies that a user has watched from my_movies_list.
         users_last_movie_in_my_movies_list_plus_one(user_id)
 
+        # Pull a kinopoisk_id of a movie where user has stopped.
         kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
 
         # Pull information about a movie from the my_movies_list.
