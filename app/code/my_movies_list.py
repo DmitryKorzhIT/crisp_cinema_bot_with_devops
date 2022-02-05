@@ -51,6 +51,37 @@ def to_my_movies_list_second_function(user_id, kinopoisk_id):
     return text_value
 
 
+# 📍 Set to "0" a number of movies that a user has watched from my_movies_list.
+def users_last_movie_in_my_movies_list_equal_zero(user_id):
+    """This function is an additional function for watching my_movies_list.
+     When a user watches my_movies_list I have decided to count
+     all his movies in a range from "0" to the last movie.
+     This function uses when a user presses the button my_movies_list and
+     it resets data about the last movie a user has seen to "0".
+     Because of this function, a user watches movies, not from the
+     last movie he or she is stopped but from the beginning.
+     """
+
+    cursor.execute(f"SELECT user_id FROM telegram_bot_users_last_movie_in_my_movies_list "
+                   f"WHERE user_id='{user_id}'")
+    number_of_movie_from_my_movies_list = cursor.fetchall()
+
+    print(f"\tMovie existence: {number_of_movie_from_my_movies_list}.\n")
+
+
+    if len(number_of_movie_from_my_movies_list) == 0:
+        cursor.execute(f"INSERT INTO telegram_bot_users_last_movie_in_my_movies_list VALUES ('{user_id}', '1')")
+        conn.commit()
+        print(f"\tMovie existence: User id was added with 1 value.\n")
+
+    else:
+        cursor.execute(f"UPDATE telegram_bot_users_last_movie_in_my_movies_list "
+                       f"SET users_last_movie_number = '1' "
+                       f"WHERE user_id='{user_id}';")
+        conn.commit()
+        print(f"\tMovie existence: users_last_movie_number updated to 1.\n")
+
+
 # 📍Show my_movies_list.
 def show_my_movies_list_in_list_view_function(user_id):
     """Show user's my_movies_list."""

@@ -16,16 +16,16 @@ cursor = conn.cursor()
 
 
 # 📍Show my_movies_list in a cards view.
-def show_my_movies_list_in_cards_view_function(user_id):
+def show_my_movies_list_in_cards_view_function(all_user_movies_list):
     """Show user's my_movies_cards. Mainly style
     has been copied from the random_movies.py,
     random_movie_buttons function.
     """
 
-    # Pull movies from my_movies_list.
-    cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list WHERE user_id='{user_id}' "
-                   f"ORDER BY date_time DESC;")
-    all_user_movies_list = cursor.fetchall()
+    # # Pull movies from my_movies_list.
+    # cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list WHERE user_id='{user_id}' "
+    #                f"ORDER BY date_time DESC;")
+    # all_user_movies_list = cursor.fetchall()
 
     # kinopoisk_id of the first movie in the my_movies_list.
     kinopoisk_id = all_user_movies_list[0][0]
@@ -108,8 +108,8 @@ def show_my_movies_list_in_cards_view_function(user_id):
 
     # Return movie poster, movie text and name with year in list format.
     message_list = [image_link, text_value, name_year]
-    from pprint import pprint
-    pprint(message_list)
+    # from pprint import pprint
+    # pprint(message_list)
 
     return message_list
 
@@ -126,8 +126,8 @@ def my_movies_list_in_cards_view_buttons():
     # Inline keyboard.
     buttons = [types.InlineKeyboardButton(text="Удалить из \U0001F4D4", callback_data="my_movies_list_buttons_next_page"),
                types.InlineKeyboardButton(text="Трейлер", url='https://www.youtube.com'),  # url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
-               types.InlineKeyboardButton(text="<", callback_data="my_movies_list_buttons_previous_page"),
-               types.InlineKeyboardButton(text=">", callback_data="my_movies_list_buttons_next_page")]
+               types.InlineKeyboardButton(text="<", callback_data="my_movies_list_in_cards_view_previous_movie"),
+               types.InlineKeyboardButton(text=">", callback_data="my_movies_list_in_cards_view_next_movie")]
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     keyboard.add(*buttons)
 
