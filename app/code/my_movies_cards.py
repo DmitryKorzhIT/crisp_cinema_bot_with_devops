@@ -126,6 +126,26 @@ def my_movies_list_in_cards_view_buttons():
     return keyboard
 
 
+# 📍Inline buttons for my_movies_list in cards view after deleting a movie.
+def my_movies_list_in_cards_view_buttons_after_deleting():
+    """Inline buttons for my_movies_list in cards view after
+    user has deleted a movie from my_movies_list.
+    It contains a button with the ability to add a removed movie
+    back to my_movies_list.
+    """
+
+    # Inline keyboard.
+    buttons = [types.InlineKeyboardButton(text="Добавить в \U0001F4D4", callback_data="my_movies_list_in_cards_view_recover_movie"),
+               types.InlineKeyboardButton(text="Трейлер", url='https://www.youtube.com'),  # url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
+               types.InlineKeyboardButton(text="<", callback_data="my_movies_list_in_cards_view_previous_movie"),
+               types.InlineKeyboardButton(text=">", callback_data="my_movies_list_in_cards_view_next_movie")]
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard.add(*buttons)
+
+    # Return an inline keyboard.
+    return keyboard
+
+
 # 📍Add a movie to my movies list.
 def to_my_movies_list_second_function(user_id, kinopoisk_id):
     """This function adds a random movie
@@ -258,7 +278,7 @@ def show_users_last_movie_in_my_movies_list(user_id):
     return kinopoisk_id
 
 
-# 📍Add data to a new table with the last movie that a user deleted from my_movies_list.
+# 📍Add data to a table with the last movie that a user deleted from my_movies_list.
 def add_to_db_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id):
     """While a user is listing his my_movies_list, he might want to delete
     a specific movie from his movies library. If a user wants to do it,
@@ -285,7 +305,13 @@ def add_to_db_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id
         conn.commit()
 
 
+# 📍Delete a movie from the my_movies_list DB table.
+def remove_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id):
+    """Remove a movie that a user has just deleted from the my_movies_list DB table."""
 
+    cursor.execute(f"DELETE FROM telegram_bot_my_movies_list "
+                   f"WHERE user_id='{user_id}' AND kinopoisk_id='{kinopoisk_id}';")
+    conn.commit()
 
 
 

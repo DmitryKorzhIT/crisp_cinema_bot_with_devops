@@ -16,8 +16,10 @@ from code.my_movies_cards import to_my_movies_list_second_function, users_last_m
 from code.my_movies_cards import users_last_movie_in_my_movies_list_plus_one
 from code.my_movies_cards import users_last_movie_in_my_movies_list_minus_one
 from code.my_movies_cards import add_to_db_users_last_removed_movie_from_my_movies_list
+from code.my_movies_cards import remove_users_last_removed_movie_from_my_movies_list
 from code.my_movies_cards import show_users_last_movie_in_my_movies_list
 from code.my_movies_cards import my_movies_list_in_cards_view_buttons
+from code.my_movies_cards import my_movies_list_in_cards_view_buttons_after_deleting
 from code.my_movies_cards import show_my_movies_list_in_cards_view_function
 from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
 
@@ -335,19 +337,18 @@ async def my_movies_list_in_cards_view_remove_movie(callback_query: types.Callba
     text_value = message_list[1]
     name_year = message_list[2]
 
-    # Add data to a new table with the last movie that a user deleted from my_movies_list.
+    # Add data to a table with the last movie that a user deleted from my_movies_list.
     add_to_db_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id)
 
-    # Delete a movie with this kinopoisk_id from user's my_movies_list.
-
-    # Show to user the last movie that a user deleted from my_movies_list with the "Add to my_movies_list" button.
+    # Delete a movie from the my_movies_list DB table.
+    remove_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id)
 
     ## Create a function to add to my_movies_list a movie that has been just deleted.
 
     await bot.edit_message_media(media=types.InputMediaPhoto(image_link, caption=text_value),
                                  chat_id=callback_query.message.chat.id,
                                  message_id=callback_query.message.message_id,
-                                 reply_markup=my_movies_list_in_cards_view_buttons())
+                                 reply_markup=my_movies_list_in_cards_view_buttons_after_deleting())
 
 if __name__ == '__main__':
     print('\nIt is working!\n')
