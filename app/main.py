@@ -324,8 +324,6 @@ async def my_movies_list_in_cards_view_previous_movie(callback_query: types.Call
     if just_deleted == True:
         set_false_my_movies_list_just_deleted(user_id)
 
-    # If movie number is 0 or less update to the number of the last movie.
-
     # Update to "-1" a number of movies that a user has watched from my_movies_list.
     users_last_movie_in_my_movies_list_minus_one(user_id)
 

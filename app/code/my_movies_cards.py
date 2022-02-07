@@ -245,14 +245,30 @@ def users_last_movie_in_my_movies_list_minus_one(user_id):
     # Pull user's last movie number.
     cursor.execute(f"SELECT users_last_movie_number FROM telegram_bot_users_last_movie_in_my_movies_list "
                    f"WHERE user_id='{user_id}';")
-    number_of_movie_from_my_movies_list = cursor.fetchall()
-    number_of_movie_from_my_movies_list = number_of_movie_from_my_movies_list[0][0]
+    number_of_movie_from_my_movies_list = cursor.fetchall()[0][0]
+    print(f"\t#053 Number: {number_of_movie_from_my_movies_list}")
 
-    # "-1" to user's last movie number.
-    cursor.execute(f"UPDATE telegram_bot_users_last_movie_in_my_movies_list "
-                   f"SET users_last_movie_number='{number_of_movie_from_my_movies_list-1}' "
+    # Count a number of user's movies in my_movies_list.
+    cursor.execute(f"SELECT COUNT (user_id) FROM telegram_bot_my_movies_list "
                    f"WHERE user_id='{user_id}';")
-    conn.commit()
+    count_amount_of_movies_in_my_movies_list = cursor.fetchall()[0][0]
+    print(f"\t#719 Amount of movies:{count_amount_of_movies_in_my_movies_list}\n")
+
+    # If we have the first movie in a queue and want to go back,
+    # this condition send us to the last movie.
+    if number_of_movie_from_my_movies_list <= 0:
+        cursor.execute(f"UPDATE telegram_bot_users_last_movie_in_my_movies_list "
+                       f"SET users_last_movie_number='{count_amount_of_movies_in_my_movies_list-1}' "
+                       f"WHERE user_id='{user_id}';")
+        conn.commit()
+
+    # If we have NOT the first movie in a queue and want to go back.
+    else:
+        # "-1" to user's last movie number.
+        cursor.execute(f"UPDATE telegram_bot_users_last_movie_in_my_movies_list "
+                       f"SET users_last_movie_number='{number_of_movie_from_my_movies_list-1}' "
+                       f"WHERE user_id='{user_id}';")
+        conn.commit()
 
 
 # 📍Pull a kinopoisk_id of a movie where user has stopped.
