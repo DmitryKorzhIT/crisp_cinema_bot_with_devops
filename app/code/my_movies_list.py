@@ -27,7 +27,6 @@ def show_my_movies_list_in_list_view_function(user_id):
     cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list WHERE user_id='{user_id}' "
                    f"ORDER BY date_time DESC;")
     all_user_movies_list = cursor.fetchall()
-    print('All users movies list:', all_user_movies_list)
 
     # For each movie from my_movies_list.
     for i in all_user_movies_list:

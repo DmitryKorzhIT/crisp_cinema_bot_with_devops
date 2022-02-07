@@ -14,6 +14,7 @@ from code.start_menu import start_menu_buttons
 from code.my_movies_list import my_movies_list_buttons, show_my_movies_list_in_list_view_function
 from code.my_movies_cards import to_my_movies_list_second_function, users_last_movie_in_my_movies_list_equal_zero
 from code.my_movies_cards import users_last_movie_in_my_movies_list_plus_one
+from code.my_movies_cards import users_last_movie_in_my_movies_list_minus_one
 from code.my_movies_cards import show_users_last_movie_in_my_movies_list
 from code.my_movies_cards import my_movies_list_in_cards_view_buttons
 from code.my_movies_cards import show_my_movies_list_in_cards_view_function
@@ -229,22 +230,6 @@ async def to_my_movies_list_function(callback_query: types.CallbackQuery, state:
                                 cache_time=0)
 
 
-# # Show my_movies_list.
-# @dp.callback_query_handler(text="show_my_movies_list")
-# async def my_movies_list(callback_query: types.CallbackQuery):
-#     """Show my_movie_list with inline buttons."""
-#
-#     # Pull data about user's id.
-#     user_id = callback_query.message.chat.id
-#
-#     # Call a function to show my_movies_list.
-#     my_movies_string = show_my_movies_list_in_list_view_function(user_id)
-#
-#     await callback_query.answer()
-#     await callback_query.message.answer(my_movies_string,
-#                                         reply_markup = my_movies_list_buttons())
-
-
 # 📍Show the first movie from my_movies_list in a cards view.
 @dp.callback_query_handler(text="show_my_movies_list_in_cards_view")
 async def my_movies_list_in_cards_view(message: types.Message):
@@ -255,7 +240,6 @@ async def my_movies_list_in_cards_view(message: types.Message):
     # Pull data about user's id.
     user_id = message.from_user.id,
     user_id = user_id[0]
-    print(f"\tUser id: {user_id}.\n")
 
     # Set to "0" a number of movies that a user has watched from my_movies_list.
     users_last_movie_in_my_movies_list_equal_zero(user_id)
@@ -304,6 +288,33 @@ async def my_movies_list_in_cards_view(message: types.Message):
                                      message_id=callback_query.message.message_id,
                                      reply_markup=my_movies_list_in_cards_view_buttons())
 
+
+# 📍Update a message with the previous movie from my_movies_list in a cards view.
+    @dp.callback_query_handler(text="my_movies_list_in_cards_view_previous_movie")
+    async def my_movies_list_in_cards_view_previous_movie(callback_query: types.CallbackQuery):
+        """Update a message with the next movie from the my_movie_list
+        in a card view with inline buttons.
+        """
+
+        # Pull data about user's id.
+        user_id = callback_query.message.chat.id
+
+        # Update to "+1" a number of movies that a user has watched from my_movies_list.
+        users_last_movie_in_my_movies_list_minus_one(user_id)
+
+        # Pull a kinopoisk_id of a movie where user has stopped.
+        kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
+
+        # Pull information about a movie from the my_movies_list.
+        message_list = show_my_movies_list_in_cards_view_function(kinopoisk_id)
+        image_link = message_list[0]
+        text_value = message_list[1]
+        name_year = message_list[2]
+
+        await bot.edit_message_media(media=types.InputMediaPhoto(image_link, caption=text_value),
+                                     chat_id=callback_query.message.chat.id,
+                                     message_id=callback_query.message.message_id,
+                                     reply_markup=my_movies_list_in_cards_view_buttons())
 
 if __name__ == '__main__':
     print('\nIt is working!\n')

@@ -212,6 +212,29 @@ def users_last_movie_in_my_movies_list_plus_one(user_id):
     conn.commit()
 
 
+# 📍Update to "-1" a number of movies that a user has watched from my_movies_list.
+def users_last_movie_in_my_movies_list_minus_one(user_id):
+    """This function is an additional function for watching my_movies_list.
+     When a user watches my_movies_list I have decided to count
+     all his movies in range from "0" to the last movie.
+     This function uses when a user presses the button
+     "my_movies_list_in_cards_view_next_movie" and it updates
+     data about the last movie a user has seen on "-1".
+     """
+
+    # Pull user's last movie number.
+    cursor.execute(f"SELECT users_last_movie_number FROM telegram_bot_users_last_movie_in_my_movies_list "
+                   f"WHERE user_id='{user_id}'")
+    number_of_movie_from_my_movies_list = cursor.fetchall()
+    number_of_movie_from_my_movies_list = number_of_movie_from_my_movies_list[0][0]
+
+    # "-1" to user's last movie number.
+    cursor.execute(f"UPDATE telegram_bot_users_last_movie_in_my_movies_list "
+                   f"SET users_last_movie_number='{number_of_movie_from_my_movies_list-1}' "
+                   f"WHERE user_id='{user_id}';")
+    conn.commit()
+
+
 # 📍Pull a kinopoisk_id of a movie where user has stopped.
 def show_users_last_movie_in_my_movies_list(user_id):
     """This function pull number of a movie where user has stopped
