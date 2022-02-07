@@ -21,6 +21,8 @@ from code.my_movies_cards import show_users_last_movie_in_my_movies_list
 from code.my_movies_cards import my_movies_list_in_cards_view_buttons
 from code.my_movies_cards import my_movies_list_in_cards_view_buttons_after_deleting
 from code.my_movies_cards import show_my_movies_list_in_cards_view_function
+from code.my_movies_cards import show_my_movies_list_just_deleted
+from code.my_movies_cards import set_false_my_movies_list_just_deleted
 from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
 
 
@@ -154,7 +156,7 @@ async def start_menu(message: types.Message):
 
 # 📍Show a random movie message.
 @dp.callback_query_handler(text="show_random_movies")
-async def random_movie(message: types.Message):
+async def random_movie(message: types.Message, state: FSMContext):
     """The function shows the first message with a random movie.
 
     1. The function pulls data about a movie.
@@ -170,6 +172,9 @@ async def random_movie(message: types.Message):
     text_value = message_list[1]
     name_year = message_list[2]
     kinopoisk_id = message_list[3]
+
+    async with state.proxy() as data:
+        data['current_movie_id']=kinopoisk_id
 
     await bot.send_photo(chat_id=message.from_user.id,
                          parse_mode=types.ParseMode.HTML,
@@ -247,7 +252,7 @@ async def my_movies_list_in_cards_view(message: types.Message):
     # Set to "0" a number of movies that a user has watched from my_movies_list.
     users_last_movie_in_my_movies_list_equal_zero(user_id)
 
-    # Pull a kinopoisk_id of a movie where user has stopped.
+    # Pull a kinopoisk_id of a movie where a user has stopped.
     kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
 
     # Pull information about a movie from the my_movies_list.
@@ -274,10 +279,20 @@ async def my_movies_list_in_cards_view_next_movie(callback_query: types.Callback
     # Pull data about user's id.
     user_id = callback_query.message.chat.id
 
-    # Update to "+1" a number of movies that a user has watched from my_movies_list.
-    users_last_movie_in_my_movies_list_plus_one(user_id)
+    # Check is the movie has been just deleted.
+    just_deleted = show_my_movies_list_just_deleted(user_id)
 
-    # Pull a kinopoisk_id of a movie where user has stopped.
+    # A movie hasn't been just deleted.
+    if just_deleted == False:
+        # Update to "+1" a number of movies that a user has watched from my_movies_list.
+        users_last_movie_in_my_movies_list_plus_one(user_id)
+
+    # A movie has been just deleted.
+    else:
+        # Set False value of just_deleted movie in the DB table.
+        set_false_my_movies_list_just_deleted(user_id)
+
+    # Pull a kinopoisk_id of a movie where a user has stopped.
     kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
 
     # Pull information about a movie from the my_movies_list.
@@ -302,10 +317,19 @@ async def my_movies_list_in_cards_view_previous_movie(callback_query: types.Call
     # Pull data about user's id.
     user_id = callback_query.message.chat.id
 
-    # Update to "+1" a number of movies that a user has watched from my_movies_list.
+    # Check is the movie has been just deleted.
+    just_deleted = show_my_movies_list_just_deleted(user_id)
+
+    # A movie hasn't been just deleted.
+    if just_deleted == True:
+        set_false_my_movies_list_just_deleted(user_id)
+
+    # If movie number is 0 or less update to the number of the last movie.
+
+    # Update to "-1" a number of movies that a user has watched from my_movies_list.
     users_last_movie_in_my_movies_list_minus_one(user_id)
 
-    # Pull a kinopoisk_id of a movie where user has stopped.
+    # Pull a kinopoisk_id of a movie where a user has stopped.
     kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
 
     # Pull information about a movie from the my_movies_list.
@@ -328,7 +352,7 @@ async def my_movies_list_in_cards_view_remove_movie(callback_query: types.Callba
     # Pull data about user's id.
     user_id = callback_query.message.chat.id
 
-    # Pull a kinopoisk_id of a movie where user has stopped.
+    # Pull a kinopoisk_id of a movie where a user has stopped.
     kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
 
     # Pull information about a movie from the my_movies_list.
@@ -343,12 +367,20 @@ async def my_movies_list_in_cards_view_remove_movie(callback_query: types.Callba
     # Delete a movie from the my_movies_list DB table.
     remove_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id)
 
-    ## Create a function to add to my_movies_list a movie that has been just deleted.
-
     await bot.edit_message_media(media=types.InputMediaPhoto(image_link, caption=text_value),
                                  chat_id=callback_query.message.chat.id,
                                  message_id=callback_query.message.message_id,
                                  reply_markup=my_movies_list_in_cards_view_buttons_after_deleting())
+
+
+# 📍Remove a movie from my_movies_list in a cards view.
+@dp.callback_query_handler(text="my_movies_list_in_cards_view_recover_movie")
+async def my_movies_list_in_cards_view_recover_movie(callback_query: types.CallbackQuery):
+    """Remove a movie from my_movies_list in a cards view."""
+    print(f"#384")
+
+
+
 
 if __name__ == '__main__':
     print('\nIt is working!\n')

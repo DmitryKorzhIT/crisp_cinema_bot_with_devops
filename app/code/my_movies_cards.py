@@ -295,12 +295,12 @@ def add_to_db_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id
     # Insert or update kinopoisk_id of the last movie that a user deleted from my_movies_list.
     if len(user_existance) == 0:
         cursor.execute(f"INSERT INTO telegram_bot_my_movies_list_last_removed_movie "
-                       f"VALUES ('{user_id}', '{kinopoisk_id}');")
+                       f"VALUES ('{user_id}', '{kinopoisk_id}', 'true');")
         conn.commit()
 
     else:
         cursor.execute(f"UPDATE telegram_bot_my_movies_list_last_removed_movie "
-                       f"SET kinopoisk_id='{kinopoisk_id}' "
+                       f"SET kinopoisk_id='{kinopoisk_id}', just_deleted='true' "
                        f"WHERE user_id='{user_id}';")
         conn.commit()
 
@@ -312,6 +312,34 @@ def remove_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id):
     cursor.execute(f"DELETE FROM telegram_bot_my_movies_list "
                    f"WHERE user_id='{user_id}' AND kinopoisk_id='{kinopoisk_id}';")
     conn.commit()
+
+
+# 📍Check is a movie has been just deleted.
+def show_my_movies_list_just_deleted(user_id):
+    """Check, is a user just deleted a movie from my_movies_list.
+    It returns a True or a False value.
+    """
+
+    cursor.execute(f"SELECT just_deleted "
+                   f"FROM telegram_bot_my_movies_list_last_removed_movie "
+                   f"WHERE user_id='{user_id}';")
+    just_deleted = cursor.fetchall()[0][0]
+
+    return just_deleted
+
+
+# 📍Set False that the movie is not just deleted.
+def set_false_my_movies_list_just_deleted(user_id):
+    """This function set a False value in the DB table and tell,
+    that the last thing that a user has done IS NOT deleted
+    a movie from my_movies_list.
+    """
+
+    cursor.execute(f"UPDATE telegram_bot_my_movies_list_last_removed_movie "
+                   f"SET just_deleted='false' "
+                   f"WHERE user_id='{user_id}';")
+    conn.commit()
+
 
 
 
