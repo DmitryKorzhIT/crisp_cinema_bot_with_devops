@@ -108,14 +108,14 @@ def show_my_movies_list_in_cards_view_function(kinopoisk_id):
 # 📍Inline buttons for my_movies_list in cards view.
 def my_movies_list_in_cards_view_buttons():
     """Inline buttons for my_movies_list in cards view:
-    • Previous movie.
+    • Remove from my_movies_list.
     • Trailer.
+    • Previous movie.
     • Next movie.
-    • Remove from my_movies_list
     """
 
     # Inline keyboard.
-    buttons = [types.InlineKeyboardButton(text="Удалить из \U0001F4D4", callback_data="my_movies_list_buttons_next_page"),
+    buttons = [types.InlineKeyboardButton(text="Удалить из \U0001F4D4", callback_data="my_movies_list_in_cards_view_remove_movie"),
                types.InlineKeyboardButton(text="Трейлер", url='https://www.youtube.com'),  # url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
                types.InlineKeyboardButton(text="<", callback_data="my_movies_list_in_cards_view_previous_movie"),
                types.InlineKeyboardButton(text=">", callback_data="my_movies_list_in_cards_view_next_movie")]
@@ -137,7 +137,7 @@ def to_my_movies_list_second_function(user_id, kinopoisk_id):
 
     # Check if the movie already in my_movies_list.
     cursor.execute(f"SELECT kinopoisk_id FROM telegram_bot_my_movies_list "
-                   f"WHERE user_id='{user_id}' AND kinopoisk_id='{kinopoisk_id}'")
+                   f"WHERE user_id='{user_id}' AND kinopoisk_id='{kinopoisk_id}';")
     movie_existence = cursor.fetchall()
 
     # Get data about current date and time.
@@ -145,7 +145,7 @@ def to_my_movies_list_second_function(user_id, kinopoisk_id):
 
     # If the movie not in my_movies_list - add it!
     if len(movie_existence) == 0:
-        cursor.execute(f"INSERT INTO telegram_bot_my_movies_list VALUES ('{user_id}', '{kinopoisk_id}', '{datetime_now}')")
+        cursor.execute(f"INSERT INTO telegram_bot_my_movies_list VALUES ('{user_id}', '{kinopoisk_id}', '{datetime_now}');")
         conn.commit()
         text_value='Фильм добавлен в вашу библиотеку!'
 
@@ -174,12 +174,12 @@ def users_last_movie_in_my_movies_list_equal_zero(user_id):
 
     # Pull user's id from the table "telegram_bot_users_last_movie_in_my_movies_list".
     cursor.execute(f"SELECT user_id FROM telegram_bot_users_last_movie_in_my_movies_list "
-                   f"WHERE user_id='{user_id}'")
+                   f"WHERE user_id='{user_id}';")
     number_of_movie_from_my_movies_list = cursor.fetchall()
 
     # Add or update number of a movie to zero.
     if len(number_of_movie_from_my_movies_list) == 0:
-        cursor.execute(f"INSERT INTO telegram_bot_users_last_movie_in_my_movies_list VALUES ('{user_id}', '0')")
+        cursor.execute(f"INSERT INTO telegram_bot_users_last_movie_in_my_movies_list VALUES ('{user_id}', '0');")
         conn.commit()
 
     else:
@@ -201,7 +201,7 @@ def users_last_movie_in_my_movies_list_plus_one(user_id):
 
     # Pull user's last movie number.
     cursor.execute(f"SELECT users_last_movie_number FROM telegram_bot_users_last_movie_in_my_movies_list "
-                   f"WHERE user_id='{user_id}'")
+                   f"WHERE user_id='{user_id}';")
     number_of_movie_from_my_movies_list = cursor.fetchall()
     number_of_movie_from_my_movies_list = number_of_movie_from_my_movies_list[0][0]
 
@@ -224,7 +224,7 @@ def users_last_movie_in_my_movies_list_minus_one(user_id):
 
     # Pull user's last movie number.
     cursor.execute(f"SELECT users_last_movie_number FROM telegram_bot_users_last_movie_in_my_movies_list "
-                   f"WHERE user_id='{user_id}'")
+                   f"WHERE user_id='{user_id}';")
     number_of_movie_from_my_movies_list = cursor.fetchall()
     number_of_movie_from_my_movies_list = number_of_movie_from_my_movies_list[0][0]
 
@@ -243,7 +243,7 @@ def show_users_last_movie_in_my_movies_list(user_id):
 
     # Pull user's last movie number.
     cursor.execute(f"SELECT users_last_movie_number FROM telegram_bot_users_last_movie_in_my_movies_list "
-                   f"WHERE user_id='{user_id}'")
+                   f"WHERE user_id='{user_id}';")
     number_of_movie_from_my_movies_list = cursor.fetchall()
     number_of_movie_from_my_movies_list = number_of_movie_from_my_movies_list[0][0]
 
@@ -256,6 +256,34 @@ def show_users_last_movie_in_my_movies_list(user_id):
     kinopoisk_id = all_users_movies_list[number_of_movie_from_my_movies_list][0]
 
     return kinopoisk_id
+
+
+# 📍Add data to a new table with the last movie that a user deleted from my_movies_list.
+def add_to_db_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id):
+    """While a user is listing his my_movies_list, he might want to delete
+    a specific movie from his movies library. If a user wants to do it,
+    he presses the button "Remove from my library" and kinopoisk_id of
+    this movie temporarily adds to a special table.
+    I need this function to have the ability to recover the kinopoisk_id
+    of the last deleted movie."""
+
+    # Check is user already exist in the table.
+    cursor.execute(f"SELECT user_id FROM telegram_bot_my_movies_list_last_removed_movie "
+                   f"WHERE user_id='{user_id}';")
+    user_existance = cursor.fetchall()
+
+    # Insert or update kinopoisk_id of the last movie that a user deleted from my_movies_list.
+    if len(user_existance) == 0:
+        cursor.execute(f"INSERT INTO telegram_bot_my_movies_list_last_removed_movie "
+                       f"VALUES ('{user_id}', '{kinopoisk_id}');")
+        conn.commit()
+
+    else:
+        cursor.execute(f"UPDATE telegram_bot_my_movies_list_last_removed_movie "
+                       f"SET kinopoisk_id='{kinopoisk_id}' "
+                       f"WHERE user_id='{user_id}';")
+        conn.commit()
+
 
 
 
