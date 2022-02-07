@@ -105,6 +105,11 @@ def show_my_movies_list_in_cards_view_function(kinopoisk_id):
     return message_list
 
 
+
+#============================================================================================#
+#===================================👉    Keyboards    👈===================================#
+#============================================================================================#
+
 # 📍Inline buttons for my_movies_list in cards view.
 def my_movies_list_in_cards_view_buttons():
     """Inline buttons for my_movies_list in cards view:
@@ -129,7 +134,7 @@ def my_movies_list_in_cards_view_buttons():
 # 📍Inline buttons for my_movies_list in cards view after deleting a movie.
 def my_movies_list_in_cards_view_buttons_after_deleting():
     """Inline buttons for my_movies_list in cards view after
-    user has deleted a movie from my_movies_list.
+    a user has been deleted a movie from my_movies_list.
     It contains a button with the ability to add a removed movie
     back to my_movies_list.
     """
@@ -145,6 +150,28 @@ def my_movies_list_in_cards_view_buttons_after_deleting():
     # Return an inline keyboard.
     return keyboard
 
+
+# 📍Inline buttons for my_movies_list in cards view after deleting a movie and recovering a movie.
+def my_movies_list_in_cards_view_buttons_after_deleting_and_recovering():
+    """Inline buttons for my_movies_list in cards view after
+    a user has been deleted a movie from my_movies_list and after
+    a user has been recovered this movie.
+    """
+
+    # Inline keyboard.
+    buttons = [types.InlineKeyboardButton(text="<", callback_data="my_movies_list_in_cards_view_previous_movie"),
+               types.InlineKeyboardButton(text=">", callback_data="my_movies_list_in_cards_view_next_movie")]
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard.add(*buttons)
+
+    # Return an inline keyboard.
+    return keyboard
+
+
+
+#============================================================================================#
+#=====================================👉    Other    👈=====================================#
+#============================================================================================#
 
 # 📍Add a movie to my movies list.
 def to_my_movies_list_second_function(user_id, kinopoisk_id):
@@ -334,6 +361,24 @@ def add_to_db_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id
         conn.commit()
 
 
+# 📍Pull data from a table with the last movie that a user deleted from my_movies_list.
+def pull_from_db_users_last_removed_movie_from_my_movies_list(user_id):
+    """While a user is listing his my_movies_list, he might want to delete
+    a specific movie from his movies library. If a user wants to do it,
+    he presses the button "Remove from my library" and kinopoisk_id of
+    this movie temporarily adds to a special table.
+    I need this function to recover the kinopoisk_id of the last deleted movie.
+    """
+
+    cursor.execute(f"SELECT kinopoisk_id "
+                   f"FROM telegram_bot_my_movies_list_last_removed_movie "
+                   f"WHERE user_id='{user_id}';")
+    kinopoisk_id = cursor.fetchall()[0][0]
+    print(f"#091: {kinopoisk_id}")
+
+    return kinopoisk_id
+
+
 # 📍Delete a movie from the my_movies_list DB table.
 def remove_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id):
     """Remove a movie that a user has just deleted from the my_movies_list DB table."""
@@ -369,6 +414,57 @@ def set_false_my_movies_list_just_deleted(user_id):
                    f"WHERE user_id='{user_id}';")
     conn.commit()
 
+
+# 📍Check is a movie has been just recovered.
+def show_my_movies_list_just_recovered(user_id):
+    """This function check a value in the DB table and tell,
+    was the last thing that user has done was recovered a movie
+    or not from my_movies_list.
+    """
+
+    cursor.execute(f"SELECT just_recovered "
+                   f"FROM telegram_bot_my_movies_list_last_removed_movie "
+                   f"WHERE user_id='{user_id}';")
+    just_recovered = cursor.fetchall()[0][0]
+
+    return just_recovered
+
+
+# 📍Set True that the movie is just recovered.
+def set_true_my_movies_list_just_recovered(user_id):
+    """This function set a True value in the DB table and tell,
+    that the last thing that a user has done is recovered
+    a movie after deleting it in my_movies_list.
+    """
+
+    cursor.execute(f"UPDATE telegram_bot_my_movies_list_last_removed_movie "
+                   f"SET just_recovered='true' "
+                   f"WHERE user_id='{user_id}';")
+    conn.commit()
+
+
+# 📍Set False that the movie is not just recovered.
+def set_false_my_movies_list_just_recovered(user_id):
+    """This function set a False value in the DB table and tell,
+    that the last thing that a user has done IS NOT recovered
+    a movie after deleting it in my_movies_list.
+    """
+
+    cursor.execute(f"UPDATE telegram_bot_my_movies_list_last_removed_movie "
+                   f"SET just_recovered='false' "
+                   f"WHERE user_id='{user_id}';")
+    conn.commit()
+
+
+# 📍Count a number of user's movies in my_movies_list.
+def count_users_movies_in_my_movies_list(user_id):
+    """Count a number of user's movies in my_movies_list."""
+
+    cursor.execute(f"SELECT COUNT (user_id) FROM telegram_bot_my_movies_list "
+                   f"WHERE user_id='{user_id}';")
+    count_amount_of_movies_in_my_movies_list = cursor.fetchall()[0][0]
+
+    return count_amount_of_movies_in_my_movies_list
 
 
 

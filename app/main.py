@@ -23,6 +23,12 @@ from code.my_movies_cards import my_movies_list_in_cards_view_buttons_after_dele
 from code.my_movies_cards import show_my_movies_list_in_cards_view_function
 from code.my_movies_cards import show_my_movies_list_just_deleted
 from code.my_movies_cards import set_false_my_movies_list_just_deleted
+from code.my_movies_cards import pull_from_db_users_last_removed_movie_from_my_movies_list
+from code.my_movies_cards import my_movies_list_in_cards_view_buttons_after_deleting_and_recovering
+from code.my_movies_cards import show_my_movies_list_just_recovered
+from code.my_movies_cards import set_true_my_movies_list_just_recovered
+from code.my_movies_cards import set_false_my_movies_list_just_recovered
+from code.my_movies_cards import count_users_movies_in_my_movies_list
 from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
 
 
@@ -249,24 +255,37 @@ async def my_movies_list_in_cards_view(message: types.Message):
     user_id = message.from_user.id,
     user_id = user_id[0]
 
-    # Set to "0" a number of movies that a user has watched from my_movies_list.
-    users_last_movie_in_my_movies_list_equal_zero(user_id)
+    # Count a number of user's movies in my_movies_list.
+    count_users_movies = count_users_movies_in_my_movies_list(user_id)
 
-    # Pull a kinopoisk_id of a movie where a user has stopped.
-    kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
+    # If the my_movies_list contains at least one movie.
+    if count_users_movies > 0:
 
-    # Pull information about a movie from the my_movies_list.
-    message_list = show_my_movies_list_in_cards_view_function(kinopoisk_id)
-    image_link = message_list[0]
-    text_value = message_list[1]
-    name_year = message_list[2]
+        # Set to "0" a number of movies that a user has watched from my_movies_list.
+        users_last_movie_in_my_movies_list_equal_zero(user_id)
 
-    await bot.send_photo(chat_id=message.from_user.id,
-                         parse_mode=types.ParseMode.HTML,
-                         photo=image_link,
-                         caption=text_value,
-                         reply_markup=my_movies_list_in_cards_view_buttons())
-    await bot.delete_message(message.from_user.id, message.message.message_id)
+        # Pull a kinopoisk_id of a movie where a user has stopped.
+        kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
+
+        # Pull information about a movie from the my_movies_list.
+        message_list = show_my_movies_list_in_cards_view_function(kinopoisk_id)
+        image_link = message_list[0]
+        text_value = message_list[1]
+        name_year = message_list[2]
+
+        await bot.send_photo(chat_id=message.from_user.id,
+                             parse_mode=types.ParseMode.HTML,
+                             photo=image_link,
+                             caption=text_value,
+                             reply_markup=my_movies_list_in_cards_view_buttons())
+        await bot.delete_message(message.from_user.id, message.message.message_id)
+
+    # If the my_movies_list contains zero movies.
+    else:
+        await bot.send_message(message.from_user.id,
+                               text='Вы еще не добавили ни одного фильма.',
+                               reply_markup=start_menu_buttons())
+        await bot.delete_message(message.from_user.id, message.message.message_id)
 
 
 # 📍Update a message with the next movie from my_movies_list in a cards view.
@@ -291,6 +310,9 @@ async def my_movies_list_in_cards_view_next_movie(callback_query: types.Callback
     else:
         # Set False value of just_deleted movie in the DB table.
         set_false_my_movies_list_just_deleted(user_id)
+
+    # Set False that the movie is just recovered.
+    set_false_my_movies_list_just_recovered(user_id)
 
     # Pull a kinopoisk_id of a movie where a user has stopped.
     kinopoisk_id = show_users_last_movie_in_my_movies_list(user_id)
@@ -322,7 +344,18 @@ async def my_movies_list_in_cards_view_previous_movie(callback_query: types.Call
 
     # A movie hasn't been just deleted.
     if just_deleted == True:
+        # Set False value of just_deleted movie in the DB table.
         set_false_my_movies_list_just_deleted(user_id)
+
+    # Check is a movie has been just recovered.
+    just_recovered = show_my_movies_list_just_recovered(user_id)
+
+    if just_recovered == True:
+        # Update to "+1" a number of movies that a user has watched from my_movies_list.
+        users_last_movie_in_my_movies_list_plus_one(user_id)
+
+        # Set False that the movie is just recovered.
+        set_false_my_movies_list_just_recovered(user_id)
 
     # Update to "-1" a number of movies that a user has watched from my_movies_list.
     users_last_movie_in_my_movies_list_minus_one(user_id)
@@ -371,12 +404,39 @@ async def my_movies_list_in_cards_view_remove_movie(callback_query: types.Callba
                                  reply_markup=my_movies_list_in_cards_view_buttons_after_deleting())
 
 
-# 📍Remove a movie from my_movies_list in a cards view.
+# 📍Recover after removing a movie from my_movies_list in a cards view.
 @dp.callback_query_handler(text="my_movies_list_in_cards_view_recover_movie")
 async def my_movies_list_in_cards_view_recover_movie(callback_query: types.CallbackQuery):
-    """Remove a movie from my_movies_list in a cards view."""
-    print(f"#384")
+    """Recover after removing a movie from my_movies_list in a cards view."""
 
+    # Pull data about user's id.
+    user_id = callback_query.message.chat.id
+
+    # Pull a kinopoisk_id of a movie where a user has stopped.
+    kinopoisk_id = pull_from_db_users_last_removed_movie_from_my_movies_list(user_id)
+
+    # Pull information about a movie from the my_movies_list.
+    message_list = show_my_movies_list_in_cards_view_function(kinopoisk_id)
+    image_link = message_list[0]
+    text_value = message_list[1]
+    name_year = message_list[2]
+
+    # Insert a movie from the my_movies_list DB table.
+    alert = to_my_movies_list_second_function(user_id, kinopoisk_id)
+
+    # Set False value of just_deleted movie in the DB table.
+    set_false_my_movies_list_just_deleted(user_id)
+
+    # Set True that the movie is just recovered.
+    set_true_my_movies_list_just_recovered(user_id)
+
+    await bot.edit_message_media(media=types.InputMediaPhoto(image_link, caption=text_value),
+                                 chat_id=callback_query.message.chat.id,
+                                 message_id=callback_query.message.message_id,
+                                 reply_markup=my_movies_list_in_cards_view_buttons_after_deleting_and_recovering())
+
+    await callback_query.answer(text=alert,
+                                cache_time=0)
 
 
 
