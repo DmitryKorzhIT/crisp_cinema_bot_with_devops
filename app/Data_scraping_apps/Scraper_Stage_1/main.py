@@ -1,22 +1,24 @@
 import requests
 import os
+from dotenv import load_dotenv
 import time
 from datetime import datetime
 from pprint import pprint
 import json
 import pandas as pd
 
-from config import KEY
 from additional_functions import json_to_csv
 
 
 # Config data.
+load_dotenv()
 URL_MOVIES = 'https://kinopoiskapiunofficial.tech/api/v2.2/films'
+KINOPOISK_API_KEY = os.getenv("KINOPOISK_API_KEY")
 
 
 # Headers and params values for an API.
 headers_value = {
-    'X-API-KEY': '3bb02829-73f8-4599-b841-657276210588',
+    'X-API-KEY': f'{KINOPOISK_API_KEY}',
     'Content-Type': 'application/json'
 }
 
@@ -30,7 +32,14 @@ page_value = 1
 order_value = 'NUM_VOTE'
 
 
-# Parcing part.
+# Remove old data.
+if os.path.isfile('./.data/data_v.1.0.csv'):
+    os.remove('./.data/data_v.1.0.csv')
+if os.path.isfile('./.data/data_v.1.0_log.log'):
+    os.remove('./.data/data_v.1.0_log.log')
+
+
+# Scraping part.
 for year in range(year_from_value,year_to_value):
     for rating in range(rating_from_value, rating_to_value):
         rating_from = rating
@@ -98,7 +107,7 @@ for year in range(year_from_value,year_to_value):
                 movies_df.to_csv('./.data/data_v.1.0.csv', mode='w', index=False, header=True)
 
             # Write data in to a log file.
-            file_log = open('./.data_v.1.0_log.log', mode='a')
+            file_log = open('./.data/data_v.1.0_log.log', mode='a')
             file_log.write(f'Done!\t\t'
                            f'Time: {datetime.now().time()};\t\t'
                            f'Year: {year};\t\t'

@@ -1,9 +1,0 @@
-.idea
-.data
-.obsidian
-__pycache__
-venv
-*.ipynb*
-Old_data/
-config.py
-
