@@ -277,7 +277,7 @@ async def my_movies_list_in_cards_view(message: types.Message):
                              parse_mode=types.ParseMode.HTML,
                              photo=image_link,
                              caption=text_value,
-                             reply_markup=my_movies_list_in_cards_view_buttons())
+                             reply_markup=my_movies_list_in_cards_view_buttons(name_year))
         await bot.delete_message(message.from_user.id, message.message.message_id)
 
     # If the my_movies_list contains zero movies.
@@ -326,7 +326,7 @@ async def my_movies_list_in_cards_view_next_movie(callback_query: types.Callback
     await bot.edit_message_media(media=types.InputMediaPhoto(image_link, caption=text_value),
                                  chat_id=callback_query.message.chat.id,
                                  message_id=callback_query.message.message_id,
-                                 reply_markup=my_movies_list_in_cards_view_buttons())
+                                 reply_markup=my_movies_list_in_cards_view_buttons(name_year))
 
 
 # 📍Update a message with the previous movie from my_movies_list in a cards view.
@@ -372,7 +372,7 @@ async def my_movies_list_in_cards_view_previous_movie(callback_query: types.Call
     await bot.edit_message_media(media=types.InputMediaPhoto(image_link, caption=text_value),
                                  chat_id=callback_query.message.chat.id,
                                  message_id=callback_query.message.message_id,
-                                 reply_markup=my_movies_list_in_cards_view_buttons())
+                                 reply_markup=my_movies_list_in_cards_view_buttons(name_year))
 
 
 # 📍Remove a movie from my_movies_list in a cards view.
@@ -401,7 +401,7 @@ async def my_movies_list_in_cards_view_remove_movie(callback_query: types.Callba
     await bot.edit_message_media(media=types.InputMediaPhoto(image_link, caption=text_value),
                                  chat_id=callback_query.message.chat.id,
                                  message_id=callback_query.message.message_id,
-                                 reply_markup=my_movies_list_in_cards_view_buttons_after_deleting())
+                                 reply_markup=my_movies_list_in_cards_view_buttons_after_deleting(name_year))
 
 
 # 📍Recover after removing a movie from my_movies_list in a cards view.

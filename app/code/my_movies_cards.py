@@ -111,7 +111,7 @@ def show_my_movies_list_in_cards_view_function(kinopoisk_id):
 #============================================================================================#
 
 # 📍Inline buttons for my_movies_list in cards view.
-def my_movies_list_in_cards_view_buttons():
+def my_movies_list_in_cards_view_buttons(name_year):
     """Inline buttons for my_movies_list in cards view:
     • Remove from my_movies_list.
     • Trailer.
@@ -120,8 +120,10 @@ def my_movies_list_in_cards_view_buttons():
     """
 
     # Inline keyboard.
-    buttons = [types.InlineKeyboardButton(text="Удалить из \U0001F4D4", callback_data="my_movies_list_in_cards_view_remove_movie"),
-               types.InlineKeyboardButton(text="Трейлер", url='https://www.youtube.com'),  # url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
+    buttons = [types.InlineKeyboardButton(text="Удалить из \U0001F4D4",
+                                          callback_data="my_movies_list_in_cards_view_remove_movie"),
+               types.InlineKeyboardButton('Трейлер',
+                                          url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
                types.InlineKeyboardButton(text="<", callback_data="my_movies_list_in_cards_view_previous_movie"),
                types.InlineKeyboardButton(text=">", callback_data="my_movies_list_in_cards_view_next_movie")]
     keyboard = types.InlineKeyboardMarkup(row_width=2)
@@ -132,7 +134,7 @@ def my_movies_list_in_cards_view_buttons():
 
 
 # 📍Inline buttons for my_movies_list in cards view after deleting a movie.
-def my_movies_list_in_cards_view_buttons_after_deleting():
+def my_movies_list_in_cards_view_buttons_after_deleting(name_year):
     """Inline buttons for my_movies_list in cards view after
     a user has been deleted a movie from my_movies_list.
     It contains a button with the ability to add a removed movie
@@ -140,8 +142,10 @@ def my_movies_list_in_cards_view_buttons_after_deleting():
     """
 
     # Inline keyboard.
-    buttons = [types.InlineKeyboardButton(text="Добавить в \U0001F4D4", callback_data="my_movies_list_in_cards_view_recover_movie"),
-               types.InlineKeyboardButton(text="Трейлер", url='https://www.youtube.com'),  # url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
+    buttons = [types.InlineKeyboardButton(text="Добавить в \U0001F4D4",
+                                          callback_data="my_movies_list_in_cards_view_recover_movie"),
+               types.InlineKeyboardButton('Трейлер',
+                                          url=f"https://www.youtube.com/results?search_query={name_year}+трейлер"),
                types.InlineKeyboardButton(text="<", callback_data="my_movies_list_in_cards_view_previous_movie"),
                types.InlineKeyboardButton(text=">", callback_data="my_movies_list_in_cards_view_next_movie")]
     keyboard = types.InlineKeyboardMarkup(row_width=2)
@@ -192,7 +196,8 @@ def to_my_movies_list_second_function(user_id, kinopoisk_id):
 
     # If the movie not in my_movies_list - add it!
     if len(movie_existence) == 0:
-        cursor.execute(f"INSERT INTO telegram_bot_my_movies_list VALUES ('{user_id}', '{kinopoisk_id}', '{datetime_now}');")
+        cursor.execute(f"INSERT INTO telegram_bot_my_movies_list "
+                       f"VALUES ('{user_id}', '{kinopoisk_id}', '{datetime_now}');")
         conn.commit()
         text_value='Фильм добавлен в вашу библиотеку!'
 
@@ -374,7 +379,6 @@ def pull_from_db_users_last_removed_movie_from_my_movies_list(user_id):
                    f"FROM telegram_bot_my_movies_list_last_removed_movie "
                    f"WHERE user_id='{user_id}';")
     kinopoisk_id = cursor.fetchall()[0][0]
-    print(f"#091: {kinopoisk_id}")
 
     return kinopoisk_id
 
