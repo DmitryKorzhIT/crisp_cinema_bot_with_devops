@@ -1,5 +1,5 @@
 from aiogram import Bot, Dispatcher, executor, types
-from aiogram.utils.markdown import hbold
+from aiogram.utils.markdown import hbold, hcode, hunderline
 from aiogram.dispatcher.filters import Text
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
@@ -144,15 +144,31 @@ cursor = conn.cursor()
 #
 #
 
-
-# 📍Menu after '/start' command.
-@dp.message_handler(commands='menu')
+# 📍Introductory information after '/start' command.
 @dp.message_handler(commands='start')
 async def start_menu(message: types.Message):
-    """Show a menu after "/start" command."""
+    """Introductory information after '/start' command."""
+
+    # Message view using aiogram markdown.
+    text_value = f"{hbold('Вы можете использовать команды:')}\n" \
+                 f"/menu — меню с функциями бота 🤖\n" \
+                 f"/random_movies — случайные фильмы 🎲\n" \
+                 f"/my_movies - мои фильмы 📔\n\n" \
+                 f"{hbold('Или воспользоваться клавиатурой ниже:')}"
+
 
     await bot.send_message(message.from_user.id,
-                           text='Выберите ниже:',
+                           text=text_value,
+                           reply_markup=start_menu_buttons())
+
+
+# 📍Menu after '/menu' command.
+@dp.message_handler(commands='menu')
+async def start_menu(message: types.Message):
+    """Show a menu after "/menu" command."""
+
+    await bot.send_message(message.from_user.id,
+                           text=f"{hbold('Выберите ниже:')}",
                            reply_markup=start_menu_buttons())
 
 
