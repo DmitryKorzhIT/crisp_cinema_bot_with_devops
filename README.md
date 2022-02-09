@@ -1,4 +1,6 @@
 # Telegram Bot for movies search
+<br>
+
 ## Developing by Python
 
 :wave:Hello and Welcome,
@@ -9,7 +11,6 @@
 
 :round_pushpin:**Telelgram_Bot_v.1.1** — have two main functions: random movies and my movies. Random movies function is an ability to list movies in random order. My movies function is the user's library of movies. Users can add movies to their library from random movies.
 Check it [here](https://t.me/crisp_cinema_bot).
-
 <br>
 
 ## Deploying by AWS, Terraform, Docker
