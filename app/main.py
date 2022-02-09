@@ -146,6 +146,7 @@ cursor = conn.cursor()
 
 
 # 📍Menu after '/start' command.
+@dp.message_handler(commands='menu')
 @dp.message_handler(commands='start')
 async def start_menu(message: types.Message):
     """Show a menu after "/start" command."""
@@ -161,6 +162,7 @@ async def start_menu(message: types.Message):
 #============================================================================================#
 
 # 📍Show a random movie message.
+@dp.message_handler(commands='random_movies')
 @dp.callback_query_handler(text="show_random_movies")
 async def random_movie(message: types.Message, state: FSMContext):
     """The function shows the first message with a random movie.
@@ -245,6 +247,7 @@ async def to_my_movies_list_function(callback_query: types.CallbackQuery, state:
 
 
 # 📍Show the first movie from my_movies_list in a cards view.
+@dp.message_handler(commands='my_movies')
 @dp.callback_query_handler(text="show_my_movies_list_in_cards_view")
 async def my_movies_list_in_cards_view(message: types.Message):
     """Show the first movie from the my_movie_list
