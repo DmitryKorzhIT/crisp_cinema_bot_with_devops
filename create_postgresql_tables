@@ -1,0 +1,60 @@
+# 📍Create the table telegram_bot_all_movies_db
+
+CREATE TABLE telegram_bot_all_movies_db (my_index BIGINT, name_ru TEXT, rating_kinopoisk DOUBLE PRECISION, rating_kinopoisk_vote_count BIGINT, film_length TEXT, rating_age_limits TEXT, kinopoisk_id BIGINT, type TEXT, year BIGINT, poster_url TEXT, countries TEXT, genres TEXT, description TEXT);
+
+COPY telegram_bot_all_movies_db
+FROM '/home/ubuntu/crisp_cinema_bot_with_devops/app/Data_scraping_apps/Data_Cleaner_Stage_3/.data/data_v.3.0.csv'
+DELIMITER ',' CSV HEADER;
+
+
+
+# 📍Create the table telegram_bot_good_quality_movies_db
+
+CREATE TABLE telegram_bot_good_quality_movies_db (my_index BIGINT, name_ru TEXT, rating_kinopoisk DOUBLE PRECISION, rating_kinopoisk_vote_count BIGINT, film_length TEXT, rating_age_limits TEXT, kinopoisk_id BIGINT, type TEXT, year BIGINT, poster_url TEXT, countries TEXT, genres TEXT, description TEXT);
+
+COPY telegram_bot_good_quality_movies_db
+FROM '/home/ubuntu/crisp_cinema_bot_with_devops/app/Data_scraping_apps/Data_Cleaner_Stage_3/.data/data_v.3.1.csv'
+DELIMITER ',' CSV HEADER;
+
+
+
+# 📍Create the table telegram_bot_my_movies_list
+
+CREATE TABLE telegram_bot_my_movies_list (user_id BIGINT, kinopoisk_id BIGINT, date_time TIMESTAMP WITHOUT TIME ZONE);
+
+
+
+# 📍Create the table telegram_bot_my_movies_list_last_removed_movie
+
+CREATE TABLE telegram_bot_my_movies_list_last_removed_movie (user_id BIGINT, kinopoisk_id BIGINT, just_deleted BOOLEAN, just_recovered BOOLEAN);
+
+
+
+# 📍Create the table telegram_bot_users_last_movie
+
+CREATE TABLE telegram_bot_users_last_movie (user_id BIGINT, kinopoisk_id BIGINT);
+
+
+
+# 📍Create the table telegram_bot_users_last_movie_in_my_movies_list
+
+CREATE TABLE telegram_bot_users_last_movie_in_my_movies_list (user_id BIGINT, users_last_movie_number INTEGER);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
