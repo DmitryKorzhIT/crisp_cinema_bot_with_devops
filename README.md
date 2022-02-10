@@ -1,5 +1,4 @@
 ## Telegram Bot for finding good movies
-<br>
 
 #### Telegram Bot versions:
 
@@ -20,9 +19,8 @@ Check the Bot [here](https://t.me/crisp_cinema_bot).
 
 Also, this project creates and deploys infrastructure on AWS.
 
-<br>
 
-#### Before running deployment commands:
+#### Before running, you need to deploy with commands:
 <br>
 
 :one: You need to open file `terraform.tfvars` and change variables values:
