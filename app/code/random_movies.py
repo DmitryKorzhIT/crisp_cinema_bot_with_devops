@@ -1,4 +1,3 @@
-# This python code use a PostgreSQL database with movies.
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.utils.markdown import hbold, hcode, hunderline
 from aiogram.dispatcher.filters import Text
@@ -6,6 +5,7 @@ from pprint import pprint
 import pandas as pd
 import numpy as np
 import psycopg2
+import random
 
 from code.config import APP_BOT_TOKEN
 from code.config import DB_DBNAME, DB_USER, DB_PASSWORD, DB_HOST
@@ -31,7 +31,7 @@ def random_movie_value():
     file_len = cursor.fetchall()[0][0]
 
     # Generate a random number.
-    random_value = np.random.randint(1, file_len+1)
+    random_value = random.randint(1, file_len+1)
 
     # Pull a movie with an index = the random number which we generated earlier.
     cursor.execute(f"SELECT * FROM telegram_bot_good_quality_movies_db WHERE my_index={random_value};")

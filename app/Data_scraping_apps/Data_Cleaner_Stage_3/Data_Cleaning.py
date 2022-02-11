@@ -42,7 +42,6 @@ try:
 except:
     pass
 
-
 # Insert index column.
 df.insert(loc=0, column='myIndex', value=range(1, len(df) + 1))
 
@@ -63,47 +62,69 @@ df.to_csv('./.data/data_v.3.0.csv', index=False)
 df.to_sql('telegram_bot_all_movies_db', engine, if_exists='replace', index=False)
 
 
+# 📍Filter from all movies only good quality movies.
 def filter_only_good_movies():
-    """Delete movies with adult content and
-    bad quality movies. Save it as a new
-    .csv file and a new database.
+    """Delete movies, which ARE NOT:
+    df_v1_1 - "rating>=7.2" and "votes>=3000".
+    df_v1_2 - "rating>=6.5" and "votes>=5000".
+    df_v1_3 - "rating>=5.5" and "votes>=10000".
+    df_v2_1 - "rating>=7.4" and "votes>=15000" for "year<=2004".
+    df_v2_2 - "rating>=7.2" and "votes>=10000" for "year>=2005" and "year<=2011".
+
+    Save it as a new .csv file and as a new PostgreSQL database.
     """
 
     df = pd.read_csv('./.data/data_v.3.0.csv')
 
-    # Remove adult bad quality movies and bad quality movies.
-    for i in range(len(df)):
-        command = 'stay'
 
-        # Remove adult bad quality movies.
-        if (df.loc[i, 'rating_age_limits'] == 'r' or
-            df.loc[i, 'rating_age_limits'] == 'age18' or
-            str(df.loc[i, 'rating_age_limits']) == 'nan') and \
-                ((df.loc[i, 'rating_kinopoisk_vote_count'] < 2000) or \
-                 (df.loc[i, 'rating_kinopoisk'] < 5.5) or \
-                 (df.loc[i, 'year'] < 2000)):
-            command = 'delete'
+    # Delete movies, which ARE NOT: "rating>=7.2" and "votes>=3000".
+    df_v1_1 = df.drop(df[(df.rating_kinopoisk_vote_count < 3000) |
+                         (df.rating_kinopoisk < 7.2)].index)
 
-        # Remove bad quality movies.
-        if (df.loc[i, 'rating_kinopoisk_vote_count'] < 1000) or \
-                (df.loc[i, 'rating_kinopoisk'] < 5.0) or \
-                (df.loc[i, 'year'] < 2000):
-            command = 'delete'
+    # Delete movies, which ARE NOT: "rating>=6.5" and "votes>=5000".
+    df_v1_2 = df.drop(df[(df.rating_kinopoisk_vote_count < 5000) |
+                         (df.rating_kinopoisk < 6.5)].index)
 
-        if command == 'delete':
-            df = df.drop(i, axis=0)
+    # Delete movies, which ARE NOT: "rating>=5.5" and "votes>=10000".
+    df_v1_3 = df.drop(df[(df.rating_kinopoisk_vote_count < 10000) |
+                         (df.rating_kinopoisk < 5.5)].index)
+
+    # Concatenate df_v1_1, df_v1_2 and df_v1_3 into a single dataframe.
+    df_v2 = pd.concat([df_v1_1, df_v1_2, df_v1_3]).drop_duplicates().reset_index(drop=True)
+    df_v2
+
+    # Filter only movies on years 1980 - 2004 with "rating>=7.4" and "votes>=15000".
+    df_v2_1 = df_v2.drop(df_v2[(df_v2.year > 2004)].index)
+
+    df_v2_1 = df_v2_1.drop(df_v2_1[(df_v2_1.rating_kinopoisk_vote_count < 15000) |
+                                   (df_v2_1.rating_kinopoisk < 7.4)].index)
+
+    # Filter only movies on years 2005 - 2011 with "rating>=7.2" and "votes>=10000".
+    df_v2_2 = df_v2.drop(df_v2[(df_v2.year < 2005) | (df_v2.year > 2011)].index)
+
+    df_v2_2 = df_v2_2.drop(df_v2_2[(df_v2_2.rating_kinopoisk_vote_count < 10000) |
+                                   (df_v2_2.rating_kinopoisk < 7.2)].index)
+
+    # Filter only movies on years 2012 and higher.
+    df_v2_3 = df_v2.drop(df_v2[(df_v2.year < 2012)].index)
+
+    # Concatenate df_v2_1, df_v2_2 and df_v2_3 into a single dataframe.
+    df_v3 = pd.concat([df_v2_1, df_v2_2, df_v2_3]).drop_duplicates().reset_index(drop=True)
+
 
     # Remove an old index column.
-    df = df.drop(['my_index'], axis=1)
+    df_v3 = df_v3.drop(['my_index'], axis=1)
 
     # Insert a new index column.
-    df.insert(loc=0, column='my_index', value=range(1, len(df) + 1))
+    df_v3.insert(loc=0, column='my_index', value=range(1, len(df_v3) + 1))
 
     # Save data to a .csv file.
-    df.to_csv('./.data/data_v.3.1.csv', index=False)
+    df_v3.to_csv('./.data/data_v.3.1.csv', index=False)
 
     # Save all movies to a PostgreSQL database 'telegram_bot_db_all'.
-    df.to_sql('telegram_bot_good_quality_movies_db', engine, if_exists='replace', index=False)
+    df_v3.to_sql('telegram_bot_good_quality_movies_db', engine, if_exists='replace', index=False)
+
+    print("Data Cleaning is done!")
 
 
 filter_only_good_movies()

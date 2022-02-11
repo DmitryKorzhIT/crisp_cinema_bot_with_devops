@@ -469,7 +469,3 @@ def count_users_movies_in_my_movies_list(user_id):
     count_amount_of_movies_in_my_movies_list = cursor.fetchall()[0][0]
 
     return count_amount_of_movies_in_my_movies_list
-
-
-
-
