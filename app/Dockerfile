@@ -37,5 +37,3 @@ RUN pip install -r ./requirements.txt
 
 # run app
 CMD ["python", "main.py"]
-
-

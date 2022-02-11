@@ -80,8 +80,3 @@ def my_movies_list_buttons():
 
     # Return an inline keyboard.
     return keyboard
-
-
-
-
-
