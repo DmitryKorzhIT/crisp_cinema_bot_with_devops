@@ -339,6 +339,22 @@ def show_users_last_movie_in_my_movies_list(user_id):
     return kinopoisk_id
 
 
+# 📍Add a user to the table.
+def add_user_to_db_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id):
+    """Add a user to the table telegram_bot_my_movies_list_last_removed_movie."""
+
+    # Check is user already exist in the table.
+    cursor.execute(f"SELECT user_id FROM telegram_bot_my_movies_list_last_removed_movie "
+                   f"WHERE user_id='{user_id}';")
+    user_existance = cursor.fetchall()
+
+    # If user doesn't exist - add user to the table.
+    if len(user_existance) == 0:
+        cursor.execute(f"INSERT INTO telegram_bot_my_movies_list_last_removed_movie "
+                       f"VALUES ('{user_id}', '{kinopoisk_id}', 'false', 'false');")
+        conn.commit()
+
+
 # 📍Add data to a table with the last movie that a user deleted from my_movies_list.
 def add_to_db_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id):
     """While a user is listing his my_movies_list, he might want to delete
@@ -348,22 +364,11 @@ def add_to_db_users_last_removed_movie_from_my_movies_list(user_id, kinopoisk_id
     I need this function to have the ability to recover the kinopoisk_id
     of the last deleted movie."""
 
-    # Check is user already exist in the table.
-    cursor.execute(f"SELECT user_id FROM telegram_bot_my_movies_list_last_removed_movie "
+    # Update kinopoisk_id of the last movie that a user deleted from my_movies_list.
+    cursor.execute(f"UPDATE telegram_bot_my_movies_list_last_removed_movie "
+                   f"SET kinopoisk_id='{kinopoisk_id}', just_deleted='true' "
                    f"WHERE user_id='{user_id}';")
-    user_existance = cursor.fetchall()
-
-    # Insert or update kinopoisk_id of the last movie that a user deleted from my_movies_list.
-    if len(user_existance) == 0:
-        cursor.execute(f"INSERT INTO telegram_bot_my_movies_list_last_removed_movie "
-                       f"VALUES ('{user_id}', '{kinopoisk_id}', 'true');")
-        conn.commit()
-
-    else:
-        cursor.execute(f"UPDATE telegram_bot_my_movies_list_last_removed_movie "
-                       f"SET kinopoisk_id='{kinopoisk_id}', just_deleted='true' "
-                       f"WHERE user_id='{user_id}';")
-        conn.commit()
+    conn.commit()
 
 
 # 📍Pull data from a table with the last movie that a user deleted from my_movies_list.
@@ -397,11 +402,12 @@ def show_my_movies_list_just_deleted(user_id):
     """Check, is a user just deleted a movie from my_movies_list.
     It returns a True or a False value.
     """
-
+    print('user id:', user_id)
     cursor.execute(f"SELECT just_deleted "
                    f"FROM telegram_bot_my_movies_list_last_removed_movie "
                    f"WHERE user_id='{user_id}';")
     just_deleted = cursor.fetchall()[0][0]
+    print("just deleted:", just_deleted)
 
     return just_deleted
 
@@ -430,7 +436,7 @@ def show_my_movies_list_just_recovered(user_id):
                    f"FROM telegram_bot_my_movies_list_last_removed_movie "
                    f"WHERE user_id='{user_id}';")
     just_recovered = cursor.fetchall()[0][0]
-
+    print("just recovered:", just_recovered)
     return just_recovered
 
 
