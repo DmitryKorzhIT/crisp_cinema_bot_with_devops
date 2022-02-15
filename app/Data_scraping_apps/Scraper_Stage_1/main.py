@@ -1,25 +1,24 @@
-import requests
+import json
 import os
-from dotenv import load_dotenv
 import time
 from datetime import datetime
 from pprint import pprint
-import json
+
 import pandas as pd
-
+import requests
 from additional_functions import json_to_csv
-
+from dotenv import load_dotenv
 
 # Config data.
 load_dotenv()
-URL_MOVIES = 'https://kinopoiskapiunofficial.tech/api/v2.2/films'
+URL_MOVIES = "https://kinopoiskapiunofficial.tech/api/v2.2/films"
 KINOPOISK_API_KEY = os.getenv("KINOPOISK_API_KEY")
 
 
 # Headers and params values for an API.
 headers_value = {
-    'X-API-KEY': f'{KINOPOISK_API_KEY}',
-    'Content-Type': 'application/json'
+    "X-API-KEY": f"{KINOPOISK_API_KEY}",
+    "Content-Type": "application/json",
 }
 
 
@@ -29,43 +28,45 @@ rating_to_value = 10
 year_from_value = 1980
 year_to_value = 2023
 page_value = 1
-order_value = 'NUM_VOTE'
+order_value = "NUM_VOTE"
 
 
 # Remove old data.
-if os.path.isfile('./.data/data_v.1.0.csv'):
-    os.remove('./.data/data_v.1.0.csv')
-if os.path.isfile('./.data/data_v.1.0_log.log'):
-    os.remove('./.data/data_v.1.0_log.log')
+if os.path.isfile("./.data/data_v.1.0.csv"):
+    os.remove("./.data/data_v.1.0.csv")
+if os.path.isfile("./.data/data_v.1.0_log.log"):
+    os.remove("./.data/data_v.1.0_log.log")
 
 
 # Scraping part.
-for year in range(year_from_value,year_to_value):
+for year in range(year_from_value, year_to_value):
     for rating in range(rating_from_value, rating_to_value):
         rating_from = rating
         rating_to = rating + 1
 
         params_value = {
-            'ratingFrom': rating_from,
-            'ratingTo': rating_to,
-            'yearFrom': year,
-            'yearTo': year,
-            'page': page_value,
-            'order': order_value
+            "ratingFrom": rating_from,
+            "ratingTo": rating_to,
+            "yearFrom": year,
+            "yearTo": year,
+            "page": page_value,
+            "order": order_value,
         }
 
-        pages = requests.get(URL_MOVIES, headers=headers_value, params=params_value).json()['totalPages']
+        pages = requests.get(
+            URL_MOVIES, headers=headers_value, params=params_value
+        ).json()["totalPages"]
         time.sleep(0.25)
 
-        for page in range(1, pages+1):
+        for page in range(1, pages + 1):
 
             params_value = {
-                'ratingFrom': rating_from,
-                'ratingTo': rating_to,
-                'yearFrom': year,
-                'yearTo': year,
-                'page': page,
-                'order': order_value
+                "ratingFrom": rating_from,
+                "ratingTo": rating_to,
+                "yearFrom": year,
+                "yearTo": year,
+                "page": page,
+                "order": order_value,
             }
 
             # Get data from the API in .json format.
@@ -74,43 +75,46 @@ for year in range(year_from_value,year_to_value):
             json_result = r.json()
 
             # Columns for pandas.DataFrame.
-            attributes = ['nameRu',
-                          'nameOriginal',
-                          'nameEn',
-
-                          'ratingKinopoisk',
-                          'ratingImdb',
-
-                          'kinopoiskId',
-                          'imdbId',
-
-                          'type',
-                          'year',
-
-                          'posterUrl',
-                          'posterUrlPreview',
-
-                          'countries',
-                          'genres']
+            attributes = [
+                "nameRu",
+                "nameOriginal",
+                "nameEn",
+                "ratingKinopoisk",
+                "ratingImdb",
+                "kinopoiskId",
+                "imdbId",
+                "type",
+                "year",
+                "posterUrl",
+                "posterUrlPreview",
+                "countries",
+                "genres",
+            ]
 
             movies_df = pd.DataFrame(columns=attributes)
 
             # Convert .json format to pandas.DataFrame with editing countries and genres attributes.
-            movies_df = json_to_csv(json_result=json_result,
-                                    attributes=attributes,
-                                    movies_df=movies_df)
+            movies_df = json_to_csv(
+                json_result=json_result, attributes=attributes, movies_df=movies_df
+            )
 
             # Save pd.DataFrame to a .csv file.
-            if os.path.isfile('./.data/data_v.1.0.csv'):  # if file exist.
-                movies_df.to_csv('./.data/data_v.1.0.csv', mode='a', index=False, header=False)
+            if os.path.isfile("./.data/data_v.1.0.csv"):  # if file exist.
+                movies_df.to_csv(
+                    "./.data/data_v.1.0.csv", mode="a", index=False, header=False
+                )
             else:  # if file doesn't exist
-                movies_df.to_csv('./.data/data_v.1.0.csv', mode='w', index=False, header=True)
+                movies_df.to_csv(
+                    "./.data/data_v.1.0.csv", mode="w", index=False, header=True
+                )
 
             # Write data in to a log file.
-            file_log = open('./.data/data_v.1.0_log.log', mode='a')
-            file_log.write(f'Done!\t\t'
-                           f'Time: {datetime.now().time()};\t\t'
-                           f'Year: {year};\t\t'
-                           f'Rating: {rating};\t\t'
-                           f'Page number {page} out of {pages} pages.\n')
+            file_log = open("./.data/data_v.1.0_log.log", mode="a")
+            file_log.write(
+                f"Done!\t\t"
+                f"Time: {datetime.now().time()};\t\t"
+                f"Year: {year};\t\t"
+                f"Rating: {rating};\t\t"
+                f"Page number {page} out of {pages} pages.\n"
+            )
             file_log.close()
