@@ -106,7 +106,12 @@ async def random_movie(message: types.Message, state: FSMContext):
                          photo=image_link,
                          caption=text_value,
                          reply_markup=random_movie_buttons(name_year))
-    await bot.delete_message(message.from_user.id, message.message.message_id)
+    
+    # Try to delete a previous message
+    try:
+        await bot.delete_message(message.from_user.id, message.message.message_id)
+    except AttributeError:
+        pass
 
 
 # 📍The "next movie" inline button.
