@@ -402,12 +402,11 @@ def show_my_movies_list_just_deleted(user_id):
     """Check, is a user just deleted a movie from my_movies_list.
     It returns a True or a False value.
     """
-    print('user id:', user_id)
+
     cursor.execute(f"SELECT just_deleted "
                    f"FROM telegram_bot_my_movies_list_last_removed_movie "
                    f"WHERE user_id='{user_id}';")
     just_deleted = cursor.fetchall()[0][0]
-    print("just deleted:", just_deleted)
 
     return just_deleted
 
@@ -436,7 +435,7 @@ def show_my_movies_list_just_recovered(user_id):
                    f"FROM telegram_bot_my_movies_list_last_removed_movie "
                    f"WHERE user_id='{user_id}';")
     just_recovered = cursor.fetchall()[0][0]
-    print("just recovered:", just_recovered)
+
     return just_recovered
 
 
