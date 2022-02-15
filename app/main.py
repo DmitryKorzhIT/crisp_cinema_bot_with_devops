@@ -38,6 +38,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.utils.markdown import hbold, hcode, hunderline
 
+
 # Telegram bot settings.
 APP_BOT_TOKEN = os.getenv("APP_BOT_TOKEN")
 
