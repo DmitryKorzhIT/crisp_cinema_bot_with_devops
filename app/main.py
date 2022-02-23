@@ -38,7 +38,6 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.utils.markdown import hbold, hcode, hunderline
 
-
 # Telegram bot settings.
 APP_BOT_TOKEN = os.getenv("APP_BOT_TOKEN")
 
@@ -280,12 +279,15 @@ async def my_movies_list_in_cards_view_next_movie(callback_query: types.Callback
     text_value = message_list[1]
     name_year = message_list[2]
 
-    await bot.edit_message_media(
-        media=types.InputMediaPhoto(image_link, caption=text_value),
-        chat_id=callback_query.message.chat.id,
-        message_id=callback_query.message.message_id,
-        reply_markup=my_movies_list_in_cards_view_buttons(name_year),
-    )
+    try:
+        await bot.edit_message_media(
+            media=types.InputMediaPhoto(image_link, caption=text_value),
+            chat_id=callback_query.message.chat.id,
+            message_id=callback_query.message.message_id,
+            reply_markup=my_movies_list_in_cards_view_buttons(name_year),
+        )
+    except:
+        pass
 
 
 # 📍Update a message with the previous movie from my_movies_list in a cards view.
@@ -330,12 +332,15 @@ async def my_movies_list_in_cards_view_previous_movie(
     text_value = message_list[1]
     name_year = message_list[2]
 
-    await bot.edit_message_media(
-        media=types.InputMediaPhoto(image_link, caption=text_value),
-        chat_id=callback_query.message.chat.id,
-        message_id=callback_query.message.message_id,
-        reply_markup=my_movies_list_in_cards_view_buttons(name_year),
-    )
+    try:
+        await bot.edit_message_media(
+            media=types.InputMediaPhoto(image_link, caption=text_value),
+            chat_id=callback_query.message.chat.id,
+            message_id=callback_query.message.message_id,
+            reply_markup=my_movies_list_in_cards_view_buttons(name_year),
+        )
+    except:
+        pass
 
 
 # 📍Remove a movie from my_movies_list in a cards view.
